@@ -196,3 +196,71 @@ button {
     border-radius: 16px;
   }
 }
+
+.page-stack {
+  display: grid;
+  gap: 22px;
+}
+
+.page-title {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.page-title p {
+  margin: 0 0 8px;
+  color: #f59e0b;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.page-title h2 {
+  margin: 0;
+  font-size: 34px;
+}
+
+.page-title span {
+  display: block;
+  margin-top: 8px;
+  color: #94a3b8;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  margin-bottom: 32px;
+}
+
+.sidebar-logo {
+  width: 58px;
+  height: 58px;
+
+  object-fit: contain;
+
+  border-radius: 16px;
+
+  background: #020617;
+}
+
+.sidebar-brand h2 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  color: white;
+}
+
+.sidebar-brand p {
+  margin-top: 4px;
+
+  color: #facc15;
+
+  font-size: 13px;
+  font-weight: 600;
+}

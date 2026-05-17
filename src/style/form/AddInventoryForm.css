@@ -1,0 +1,94 @@
+.add-inventory-form {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  padding: 24px;
+}
+
+.add-inventory-form__header {
+  margin-bottom: 22px;
+}
+
+.add-inventory-form__header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.add-inventory-form__header p {
+  margin: 8px 0 0;
+  color: #94a3b8;
+}
+
+.inventory-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.inventory-form-grid label {
+  display: grid;
+  gap: 8px;
+}
+
+.inventory-form-grid span {
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.inventory-form-grid input,
+.inventory-form-grid select {
+  height: 50px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  background: rgba(2, 6, 23, 0.7);
+  border-radius: 14px;
+  padding: 0 14px;
+  color: white;
+  outline: none;
+}
+
+.inventory-form-grid input:focus {
+  border-color: rgba(245, 158, 11, 0.5);
+}
+
+.submit-inventory-btn {
+  margin-top: 24px;
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #020617;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    opacity 0.18s ease,
+    transform 0.12s ease;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .submit-inventory-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

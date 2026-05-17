@@ -1,9 +1,17 @@
-import { Minus, Plus, Search, Trash2, AlertTriangle } from "lucide-react";
+import { AlertTriangle, Minus, Plus, Search, Trash2 } from "lucide-react";
+
 import { useMemo, useState } from "react";
+
+import {
+  useDeleteInventoryItem,
+  useInventory,
+  useUpdateInventoryStock,
+} from "../hooks/useInventory";
+
 import "../style/components/InventoryTable.css";
 
 type InventoryItem = {
-  id: number;
+  _id: string;
   name: string;
   category: string;
   price: number;
@@ -11,46 +19,18 @@ type InventoryItem = {
   lowStockLevel: number;
 };
 
-const mockInventory: InventoryItem[] = [
-  {
-    id: 1,
-    name: "Sardinas",
-    category: "Paninda",
-    price: 28,
-    stock: 2,
-    lowStockLevel: 5,
-  },
-  {
-    id: 2,
-    name: "Kape",
-    category: "Drinks",
-    price: 15,
-    stock: 30,
-    lowStockLevel: 10,
-  },
-  {
-    id: 3,
-    name: "Noodles",
-    category: "Paninda",
-    price: 18,
-    stock: 8,
-    lowStockLevel: 10,
-  },
-  {
-    id: 4,
-    name: "Softdrinks",
-    category: "Drinks",
-    price: 25,
-    stock: 14,
-    lowStockLevel: 8,
-  },
-];
-
 const money = (value: number) => `₱${value.toLocaleString("en-PH")}`;
 
 export default function InventoryTable() {
   const [search, setSearch] = useState("");
-  const [items, setItems] = useState<InventoryItem[]>(mockInventory);
+
+  const { data, isLoading } = useInventory();
+
+  const updateStock = useUpdateInventoryStock();
+
+  const deleteItem = useDeleteInventoryItem();
+
+  const items: InventoryItem[] = Array.isArray(data) ? data : [];
 
   const filteredItems = useMemo(() => {
     return items.filter((item) =>
@@ -58,33 +38,43 @@ export default function InventoryTable() {
     );
   }, [items, search]);
 
-  const updateStock = (id: number, amount: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, stock: Math.max(0, item.stock + amount) }
-          : item,
-      ),
-    );
+  const handleStockUpdate = (item: InventoryItem, amount: number) => {
+    const updatedStock = Math.max(0, item.stock + amount);
+
+    updateStock.mutate({
+      id: item._id,
+      stock: updatedStock,
+    });
   };
 
-  const deleteItem = (id: number) => {
+  const handleDelete = (id: string) => {
     const confirmed = window.confirm("Tanggalin ang item na ito?");
+
     if (!confirmed) return;
 
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    deleteItem.mutate(id);
   };
+
+  if (isLoading) {
+    return (
+      <section className="inventory-table">
+        <div className="inventory-empty">Loading inventory...</div>
+      </section>
+    );
+  }
 
   return (
     <section className="inventory-table">
       <div className="inventory-table__header">
         <div>
           <h3>Imbentaryo</h3>
+
           <p>Track stock, presyo, at low-stock alerts</p>
         </div>
 
         <div className="inventory-search">
           <Search size={16} />
+
           <input
             type="text"
             placeholder="Search item..."
@@ -113,7 +103,7 @@ export default function InventoryTable() {
               const isLowStock = item.stock <= item.lowStockLevel;
 
               return (
-                <tr key={item.id}>
+                <tr key={item._id}>
                   <td>
                     <strong>{item.name}</strong>
                   </td>
@@ -131,6 +121,7 @@ export default function InventoryTable() {
                       className={`stock-badge ${isLowStock ? "low" : "good"}`}
                     >
                       {isLowStock && <AlertTriangle size={13} />}
+
                       {isLowStock ? "Low Stock" : "Okay"}
                     </span>
                   </td>
@@ -139,7 +130,7 @@ export default function InventoryTable() {
                     <div className="stock-actions">
                       <button
                         type="button"
-                        onClick={() => updateStock(item.id, -1)}
+                        onClick={() => handleStockUpdate(item, -1)}
                         disabled={item.stock <= 0}
                       >
                         <Minus size={15} />
@@ -147,7 +138,7 @@ export default function InventoryTable() {
 
                       <button
                         type="button"
-                        onClick={() => updateStock(item.id, 1)}
+                        onClick={() => handleStockUpdate(item, 1)}
                       >
                         <Plus size={15} />
                       </button>
@@ -158,7 +149,7 @@ export default function InventoryTable() {
                     <button
                       type="button"
                       className="inventory-delete-btn"
-                      onClick={() => deleteItem(item.id)}
+                      onClick={() => handleDelete(item._id)}
                     >
                       <Trash2 size={16} />
                     </button>

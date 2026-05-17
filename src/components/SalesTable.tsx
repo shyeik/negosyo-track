@@ -1,62 +1,57 @@
 import { Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
+import { useDeleteSale, useSales } from "../hooks/useSales";
+
 import "../style/components/SalesTable.css";
 
 type Sale = {
-  id: number;
+  _id: string;
   item: string;
   amount: number;
   qty: number;
-  payment: "Cash" | "GCash" | "Maya" | "Card";
+  paymentMethod: "Cash" | "GCash" | "Maya" | "Card";
   date: string;
 };
-
-const mockSales: Sale[] = [
-  {
-    id: 1,
-    item: "Kape",
-    amount: 120,
-    qty: 2,
-    payment: "Cash",
-    date: "May 17, 2026",
-  },
-  {
-    id: 2,
-    item: "Pandesal",
-    amount: 85,
-    qty: 5,
-    payment: "GCash",
-    date: "May 17, 2026",
-  },
-  {
-    id: 3,
-    item: "Softdrinks",
-    amount: 240,
-    qty: 6,
-    payment: "Maya",
-    date: "May 17, 2026",
-  },
-  {
-    id: 4,
-    item: "Noodles",
-    amount: 160,
-    qty: 4,
-    payment: "Card",
-    date: "May 17, 2026",
-  },
-];
 
 const money = (value: number) => `₱${value.toLocaleString("en-PH")}`;
 
 export default function SalesTable() {
   const [search, setSearch] = useState("");
 
+  const { data, isLoading } = useSales();
+
+  const sales = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.sales)
+      ? data.sales
+      : Array.isArray(data?.data)
+        ? data.data
+        : [];
+
+  const deleteSale = useDeleteSale();
+
   const filteredSales = useMemo(() => {
-    return mockSales.filter((sale) =>
+    return sales.filter((sale: Sale) =>
       sale.item.toLowerCase().includes(search.toLowerCase()),
     );
-  }, [search]);
+  }, [sales, search]);
+
+  const handleDelete = (id: string) => {
+    const confirmed = window.confirm("Tanggalin ang sale na ito?");
+
+    if (!confirmed) return;
+
+    deleteSale.mutate(id);
+  };
+
+  if (isLoading) {
+    return (
+      <section className="sales-table">
+        <div className="empty-state">Loading sales...</div>
+      </section>
+    );
+  }
 
   return (
     <section className="sales-table">
@@ -92,8 +87,8 @@ export default function SalesTable() {
           </thead>
 
           <tbody>
-            {filteredSales.map((sale) => (
-              <tr key={sale.id}>
+            {filteredSales.map((sale: Sale) => (
+              <tr key={sale._id}>
                 <td>
                   <strong>{sale.item}</strong>
                 </td>
@@ -102,18 +97,27 @@ export default function SalesTable() {
 
                 <td>
                   <span
-                    className={`payment-badge ${sale.payment.toLowerCase()}`}
+                    className={`payment-badge ${sale.paymentMethod.toLowerCase()}`}
                   >
-                    {sale.payment}
+                    {sale.paymentMethod}
                   </span>
                 </td>
 
                 <td>{money(sale.amount)}</td>
 
-                <td>{sale.date}</td>
+                <td>
+                  {new Date(sale.date).toLocaleDateString("en-PH", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
 
                 <td>
-                  <button className="delete-btn">
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDelete(sale._id)}
+                  >
                     <Trash2 size={16} />
                   </button>
                 </td>

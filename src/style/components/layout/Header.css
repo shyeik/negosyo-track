@@ -1,0 +1,52 @@
+.minimal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.minimal-label {
+  margin: 0 0 6px;
+
+  color: #facc15;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.minimal-header h1 {
+  margin: 0;
+
+  color: #f8fafc;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.minimal-date {
+  height: 42px;
+  padding: 0 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .minimal-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

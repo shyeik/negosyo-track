@@ -1,51 +1,29 @@
 import { Search, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
+
+import { useDeleteExpense, useExpenses } from "../hooks/useExpenses";
+
 import "../style/components/ExpensesTable.css";
 
 type Expense = {
-  id: number;
+  _id: string;
   category: "Supplies" | "Utilities" | "Rent" | "Delivery" | "Other";
+
   description: string;
   amount: number;
   date: string;
 };
 
-const mockExpenses: Expense[] = [
-  {
-    id: 1,
-    category: "Supplies",
-    description: "Dagdag paninda",
-    amount: 3200,
-    date: "May 17, 2026",
-  },
-  {
-    id: 2,
-    category: "Utilities",
-    description: "Electric bill",
-    amount: 1450,
-    date: "May 16, 2026",
-  },
-  {
-    id: 3,
-    category: "Delivery",
-    description: "Delivery fee",
-    amount: 250,
-    date: "May 16, 2026",
-  },
-  {
-    id: 4,
-    category: "Rent",
-    description: "Monthly stall rent",
-    amount: 5000,
-    date: "May 15, 2026",
-  },
-];
-
 const money = (value: number) => `₱${value.toLocaleString("en-PH")}`;
 
 export default function ExpensesTable() {
   const [search, setSearch] = useState("");
-  const [expenses, setExpenses] = useState<Expense[]>(mockExpenses);
+
+  const { data, isLoading } = useExpenses();
+
+  const deleteExpense = useDeleteExpense();
+
+  const expenses: Expense[] = Array.isArray(data) ? data : [];
 
   const filteredExpenses = useMemo(() => {
     const query = search.toLowerCase();
@@ -57,18 +35,28 @@ export default function ExpensesTable() {
     );
   }, [expenses, search]);
 
-  const deleteExpense = (id: number) => {
+  const handleDelete = (id: string) => {
     const confirmed = window.confirm("Tanggalin ang gastos na ito?");
+
     if (!confirmed) return;
 
-    setExpenses((prev) => prev.filter((expense) => expense.id !== id));
+    deleteExpense.mutate(id);
   };
+
+  if (isLoading) {
+    return (
+      <section className="expenses-table">
+        <div className="expenses-empty">Loading expenses...</div>
+      </section>
+    );
+  }
 
   return (
     <section className="expenses-table">
       <div className="expenses-table__header">
         <div>
           <h3>Gastos</h3>
+
           <p>Track supplies, bills, rent, delivery, at iba pang gastos</p>
         </div>
 
@@ -98,7 +86,7 @@ export default function ExpensesTable() {
 
           <tbody>
             {filteredExpenses.map((expense) => (
-              <tr key={expense.id}>
+              <tr key={expense._id}>
                 <td>
                   <strong>{expense.description}</strong>
                 </td>
@@ -115,13 +103,19 @@ export default function ExpensesTable() {
                   <b>{money(expense.amount)}</b>
                 </td>
 
-                <td>{expense.date}</td>
+                <td>
+                  {new Date(expense.date).toLocaleDateString("en-PH", {
+                    month: "short",
+                    day: "2-digit",
+                    year: "numeric",
+                  })}
+                </td>
 
                 <td>
                   <button
                     type="button"
                     className="expense-delete-btn"
-                    onClick={() => deleteExpense(expense.id)}
+                    onClick={() => handleDelete(expense._id)}
                   >
                     <Trash2 size={16} />
                   </button>
