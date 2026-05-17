@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import "../../style/ui/Statcard.css";
+import "../../style/ui/StatCard.css";
 
 type StatCardProps = {
   label: string;
