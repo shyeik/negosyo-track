@@ -6,7 +6,12 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-export type PageKey = "home" | "sales" | "expenses" | "inventory" | "reports";
+export type PageKey =
+  | "dashboard"
+  | "sales"
+  | "expenses"
+  | "inventory"
+  | "reports";
 
 type SidebarProps = {
   activePage: PageKey;
@@ -14,11 +19,11 @@ type SidebarProps = {
 };
 
 const navItems = [
-  { key: "home", label: "Home", icon: Home },
-  { key: "sales", label: "Benta", icon: ShoppingCart },
-  { key: "expenses", label: "Gastos", icon: ReceiptText },
-  { key: "inventory", label: "Imbentaryo", icon: Package },
-  { key: "reports", label: "Ulat", icon: BarChart3 },
+  { key: "dashboard", label: "Dashboard", icon: Home },
+  { key: "sales", label: "Sales", icon: ShoppingCart },
+  { key: "expenses", label: "Expenses", icon: ReceiptText },
+  { key: "inventory", label: "Inventory", icon: Package },
+  { key: "reports", label: "Reports", icon: BarChart3 },
 ] as const;
 
 export default function Sidebar({ activePage, onChangePage }: SidebarProps) {
