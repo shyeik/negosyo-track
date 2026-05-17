@@ -1,0 +1,141 @@
+.sales-table {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.sales-table__header {
+  padding: 22px 24px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.sales-table__header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.sales-table__header p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.sales-search {
+  height: 44px;
+  min-width: 240px;
+  background: rgba(2, 6, 23, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 0 14px;
+
+  color: #94a3b8;
+}
+
+.sales-search input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: white;
+}
+
+.sales-table__wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: rgba(148, 163, 184, 0.04);
+}
+
+th {
+  text-align: left;
+  padding: 16px 24px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+td {
+  padding: 18px 24px;
+  border-top: 1px solid rgba(148, 163, 184, 0.06);
+}
+
+tbody tr:hover {
+  background: rgba(148, 163, 184, 0.03);
+}
+
+.payment-badge {
+  padding: 7px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.payment-badge.cash {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22c55e;
+}
+
+.payment-badge.gcash {
+  background: rgba(59, 130, 246, 0.14);
+  color: #3b82f6;
+}
+
+.payment-badge.maya {
+  background: rgba(168, 85, 247, 0.14);
+  color: #a855f7;
+}
+
+.payment-badge.card {
+  background: rgba(245, 158, 11, 0.14);
+  color: #f59e0b;
+}
+
+.delete-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  display: grid;
+  place-items: center;
+}
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .sales-table__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sales-search {
+    min-width: 100%;
+  }
+
+  th,
+  td {
+    padding: 14px 16px;
+  }
+}

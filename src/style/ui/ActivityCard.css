@@ -1,0 +1,26 @@
+.activity-card {
+  background: rgba(15, 23, 42, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.activity-card__header {
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.activity-card__header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.activity-card__header p {
+  margin: 6px 0 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.activity-card__content {
+  padding: 18px 24px 24px;
+}
