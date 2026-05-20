@@ -1,10 +1,19 @@
-import { AlertTriangle, Minus, Plus, Search, Trash2 } from "lucide-react";
-
-import { useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  Loader2,
+  Minus,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
   useDeleteInventoryItem,
   useInventory,
+  useUpdateInventoryItem,
   useUpdateInventoryStock,
 } from "../hooks/useInventory";
 
@@ -19,24 +28,305 @@ type InventoryItem = {
   lowStockLevel: number;
 };
 
-const money = (value: number) => `₱${value.toLocaleString("en-PH")}`;
+type InventoryFormData = {
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  lowStockLevel: number;
+};
+
+const formatAmount = (value: number) =>
+  new Intl.NumberFormat("en-PH", {
+    style: "currency",
+    currency: "PHP",
+    minimumFractionDigits: 2,
+  }).format(Number(value || 0));
+
+function TableHead() {
+  return (
+    <tr>
+      <th>Item</th>
+      <th>Category</th>
+      <th>Presyo</th>
+      <th>Stock</th>
+      <th>Status</th>
+      <th style={{ textAlign: "right" }}>Controls</th>
+      <th style={{ textAlign: "right" }}>Aksyon</th>
+    </tr>
+  );
+}
+
+function SkeletonRow() {
+  return (
+    <tr className="inv-skel-row">
+      <td>
+        <div className="inv-skel" style={{ width: 140 }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 90 }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 80 }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 50 }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 90 }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 80, marginLeft: "auto" }} />
+      </td>
+      <td>
+        <div className="inv-skel" style={{ width: 130, marginLeft: "auto" }} />
+      </td>
+    </tr>
+  );
+}
+
+type EditInventoryModalProps = {
+  item: InventoryItem | null;
+  onClose: () => void;
+};
+
+function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
+  const updateInventory = useUpdateInventoryItem();
+
+  const [form, setForm] = useState<InventoryFormData>({
+    name: "",
+    category: "",
+    price: 0,
+    stock: 0,
+    lowStockLevel: 5,
+  });
+
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof InventoryFormData, string>>
+  >({});
+
+  useEffect(() => {
+    if (!item) return;
+
+    setForm({
+      name: item.name,
+      category: item.category,
+      price: Number(item.price || 0),
+      stock: Number(item.stock || 0),
+      lowStockLevel: Number(item.lowStockLevel || 5),
+    });
+
+    setErrors({});
+  }, [item]);
+
+  if (!item) return null;
+
+  const set = <K extends keyof InventoryFormData>(
+    key: K,
+    value: InventoryFormData[K],
+  ) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+    if (errors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
+    }
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const nextErrors: Partial<Record<keyof InventoryFormData, string>> = {};
+
+    if (!form.name.trim()) {
+      nextErrors.name = "Kailangan ng item name.";
+    }
+
+    if (!form.category.trim()) {
+      nextErrors.category = "Kailangan ng category.";
+    }
+
+    if (!form.price || form.price <= 0) {
+      nextErrors.price = "Dapat higit sa 0 ang presyo.";
+    }
+
+    if (form.stock < 0) {
+      nextErrors.stock = "Hindi puwedeng negative ang stock.";
+    }
+
+    if (form.lowStockLevel < 0) {
+      nextErrors.lowStockLevel = "Hindi puwedeng negative.";
+    }
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) return;
+
+    updateInventory.mutate(
+      {
+        id: item._id,
+        payload: {
+          name: form.name.trim(),
+          category: form.category.trim(),
+          price: Number(form.price),
+          stock: Number(form.stock),
+          lowStockLevel: Number(form.lowStockLevel),
+        },
+      },
+      {
+        onSuccess: () => onClose(),
+      },
+    );
+  };
+
+  return (
+    <div
+      className="modal-bg modal-bg--on"
+      role="dialog"
+      aria-modal="true"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div className="modal modal--on edit-modal">
+        <div className="modal__head modal__head--between">
+          <div>
+            <h2 className="modal__title">Edit Inventory</h2>
+            <p className="modal__sub">
+              I-update ang item details, presyo, stock, at low-stock level.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="modal__close"
+            onClick={onClose}
+            aria-label="Close edit modal"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <form className="ef" onSubmit={handleSubmit} noValidate>
+          <div>
+            <label className="ef__label">
+              Item Name <span className="ef__req">*</span>
+            </label>
+
+            <input
+              type="text"
+              placeholder="Hal. Bigas, softdrinks, LPG..."
+              value={form.name}
+              onChange={(event) => set("name", event.target.value)}
+            />
+
+            {errors.name && <p className="ef__hint">{errors.name}</p>}
+          </div>
+
+          <div>
+            <label className="ef__label">
+              Category <span className="ef__req">*</span>
+            </label>
+
+            <input
+              type="text"
+              placeholder="Hal. Supplies, Drinks, Food..."
+              value={form.category}
+              onChange={(event) => set("category", event.target.value)}
+            />
+
+            {errors.category && <p className="ef__hint">{errors.category}</p>}
+          </div>
+
+          <div className="ef__grid">
+            <div>
+              <label className="ef__label">
+                Price <span className="ef__req">*</span>
+              </label>
+
+              <div className="ef__amount">
+                <span className="ef__peso">₱</span>
+
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={form.price === 0 ? "" : form.price}
+                  onChange={(event) => set("price", Number(event.target.value))}
+                />
+              </div>
+
+              {errors.price && <p className="ef__hint">{errors.price}</p>}
+            </div>
+
+            <div>
+              <label className="ef__label">Stock</label>
+
+              <input
+                type="number"
+                min="0"
+                value={form.stock}
+                onChange={(event) => set("stock", Number(event.target.value))}
+              />
+
+              {errors.stock && <p className="ef__hint">{errors.stock}</p>}
+            </div>
+          </div>
+
+          <div>
+            <label className="ef__label">Low Stock Level</label>
+
+            <input
+              type="number"
+              min="0"
+              value={form.lowStockLevel}
+              onChange={(event) =>
+                set("lowStockLevel", Number(event.target.value))
+              }
+            />
+
+            {errors.lowStockLevel && (
+              <p className="ef__hint">{errors.lowStockLevel}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="ef__submit"
+            disabled={updateInventory.isPending}
+          >
+            {updateInventory.isPending ? (
+              <>
+                <Loader2 size={16} className="spin" /> Updating...
+              </>
+            ) : (
+              <>
+                <Pencil size={16} /> Save Changes
+              </>
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 export default function InventoryTable() {
-  const [search, setSearch] = useState("");
+  const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<InventoryItem | null>(null);
 
   const { data, isLoading } = useInventory();
-
   const updateStock = useUpdateInventoryStock();
-
   const deleteItem = useDeleteInventoryItem();
 
   const items: InventoryItem[] = Array.isArray(data) ? data : [];
 
-  const filteredItems = useMemo(() => {
-    return items.filter((item) =>
-      item.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [items, search]);
+  const totalValue = items.reduce(
+    (sum, item) => sum + Number(item.price || 0) * Number(item.stock || 0),
+    0,
+  );
+
+  const count = items.length;
 
   const handleStockUpdate = (item: InventoryItem, amount: number) => {
     const updatedStock = Math.max(0, item.stock + amount);
@@ -47,123 +337,193 @@ export default function InventoryTable() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    const confirmed = window.confirm("Tanggalin ang item na ito?");
+  const confirmDelete = () => {
+    if (!itemToDelete) return;
 
-    if (!confirmed) return;
-
-    deleteItem.mutate(id);
+    deleteItem.mutate(itemToDelete._id, {
+      onSuccess: () => setItemToDelete(null),
+    });
   };
 
-  if (isLoading) {
-    return (
-      <section className="inventory-table">
-        <div className="inventory-empty">Loading inventory...</div>
-      </section>
-    );
-  }
-
   return (
-    <section className="inventory-table">
-      <div className="inventory-table__header">
-        <div>
-          <h3>Imbentaryo</h3>
+    <>
+      <div className="it-card">
+        <div className="it-toolbar">
+          <div className="it-toolbar__left">
+            <span className="it-toolbar__title">Listahan ng Imbentaryo</span>
+            {!isLoading && <span className="it-toolbar__count">{count}</span>}
+          </div>
 
-          <p>Track stock, presyo, at low-stock alerts</p>
+          {!isLoading && count > 0 && (
+            <div className="it-toolbar__total">
+              Inventory Value:{" "}
+              <span className="it-toolbar__total-val">
+                {formatAmount(totalValue)}
+              </span>
+            </div>
+          )}
         </div>
 
-        <div className="inventory-search">
-          <Search size={16} />
+        <div className="it-scroll">
+          {isLoading ? (
+            <table className="it">
+              <thead>
+                <TableHead />
+              </thead>
 
-          <input
-            type="text"
-            placeholder="Search item..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+              <tbody>
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <SkeletonRow key={`inventory-skeleton-${index}`} />
+                ))}
+              </tbody>
+            </table>
+          ) : count === 0 ? (
+            <div className="it-empty">
+              <div className="it-empty__icon">
+                <Package size={24} />
+              </div>
+
+              <p className="it-empty__title">Walang inventory item pa</p>
+
+              <p className="it-empty__sub">
+                Mag-add ng item para masimulan ang inventory tracking.
+              </p>
+            </div>
+          ) : (
+            <table className="it">
+              <thead>
+                <TableHead />
+              </thead>
+
+              <tbody>
+                {items.map((item) => {
+                  const isLowStock = item.stock <= item.lowStockLevel;
+
+                  return (
+                    <tr key={item._id}>
+                      <td>
+                        <span className="it-name">{item.name}</span>
+                      </td>
+
+                      <td>
+                        <span className="it-category">{item.category}</span>
+                      </td>
+
+                      <td>
+                        <span className="it-price">
+                          {formatAmount(item.price)}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span className="it-stock">{item.stock}</span>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`stock-badge ${
+                            isLowStock ? "low" : "good"
+                          }`}
+                        >
+                          {isLowStock && <AlertTriangle size={13} />}
+                          {isLowStock ? "Low Stock" : "Okay"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="stock-actions">
+                          <button
+                            type="button"
+                            onClick={() => handleStockUpdate(item, -1)}
+                            disabled={item.stock <= 0 || updateStock.isPending}
+                            aria-label={`Decrease ${item.name} stock`}
+                          >
+                            <Minus size={15} />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleStockUpdate(item, 1)}
+                            disabled={updateStock.isPending}
+                            aria-label={`Increase ${item.name} stock`}
+                          >
+                            <Plus size={15} />
+                          </button>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            type="button"
+                            className="btn-edit"
+                            onClick={() => setItemToEdit(item)}
+                            aria-label={`I-edit ang ${item.name}`}
+                          >
+                            <Pencil size={13} />
+                            Edit
+                          </button>
+
+                          <button
+                            className="btn-del"
+                            type="button"
+                            onClick={() => setItemToDelete(item)}
+                            aria-label={`I-delete ang ${item.name}`}
+                          >
+                            <Trash2 size={13} />
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 
-      <div className="inventory-table__wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Presyo</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Controls</th>
-              <th></th>
-            </tr>
-          </thead>
+      <EditInventoryModal
+        item={itemToEdit}
+        onClose={() => setItemToEdit(null)}
+      />
 
-          <tbody>
-            {filteredItems.map((item) => {
-              const isLowStock = item.stock <= item.lowStockLevel;
+      {itemToDelete && (
+        <div className="modal-bg modal-bg--on" role="dialog" aria-modal="true">
+          <div className="modal modal--on delete-modal">
+            <div className="modal__head">
+              <div>
+                <h2 className="modal__title">Delete Item?</h2>
 
-              return (
-                <tr key={item._id}>
-                  <td>
-                    <strong>{item.name}</strong>
-                  </td>
+                <p className="modal__sub">
+                  Sigurado ka bang gusto mong tanggalin ang{" "}
+                  <strong>{itemToDelete.name}</strong>?
+                </p>
+              </div>
+            </div>
 
-                  <td>{item.category}</td>
+            <div className="delete-modal__actions">
+              <button
+                type="button"
+                className="delete-modal__cancel"
+                onClick={() => setItemToDelete(null)}
+              >
+                Cancel
+              </button>
 
-                  <td>{money(item.price)}</td>
-
-                  <td>
-                    <b>{item.stock}</b>
-                  </td>
-
-                  <td>
-                    <span
-                      className={`stock-badge ${isLowStock ? "low" : "good"}`}
-                    >
-                      {isLowStock && <AlertTriangle size={13} />}
-
-                      {isLowStock ? "Low Stock" : "Okay"}
-                    </span>
-                  </td>
-
-                  <td>
-                    <div className="stock-actions">
-                      <button
-                        type="button"
-                        onClick={() => handleStockUpdate(item, -1)}
-                        disabled={item.stock <= 0}
-                      >
-                        <Minus size={15} />
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleStockUpdate(item, 1)}
-                      >
-                        <Plus size={15} />
-                      </button>
-                    </div>
-                  </td>
-
-                  <td>
-                    <button
-                      type="button"
-                      className="inventory-delete-btn"
-                      onClick={() => handleDelete(item._id)}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-
-        {filteredItems.length === 0 && (
-          <div className="inventory-empty">Walang item na nakita.</div>
-        )}
-      </div>
-    </section>
+              <button
+                type="button"
+                className="delete-modal__confirm"
+                disabled={deleteItem.isPending}
+                onClick={confirmDelete}
+              >
+                {deleteItem.isPending ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

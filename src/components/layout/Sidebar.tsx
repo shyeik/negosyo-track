@@ -6,7 +6,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 
-import tracabaoLogo from "../../assets/trackabao.png";
+import tracabaoLogo from "../../assets/baobao.png";
 
 export type PageKey =
   | "dashboard"

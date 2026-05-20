@@ -1,3 +1,5 @@
+import { useEffect, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Package, ReceiptText, ShoppingCart, TrendingUp } from "lucide-react";
 
 import InventoryTable from "../components/InventoryTable";
@@ -10,6 +12,7 @@ import ExpensesTable from "../components/ExpensesTable";
 import { useExpenses } from "../hooks/useExpenses";
 import { useInventory } from "../hooks/useInventory";
 import { useSales } from "../hooks/useSales";
+import { socket } from "../lib/socket";
 
 import "../style/pages/HomePage.css";
 
@@ -39,15 +42,40 @@ type InventoryItem = {
   lowStockLevel: number;
 };
 
-const today = () => new Date().toISOString().slice(0, 10);
-
 const money = (value: number) =>
   `₱${Number(value || 0).toLocaleString("en-PH")}`;
 
 export default function HomePage() {
-  const { data: salesData } = useSales();
-  const { data: expensesData } = useExpenses();
-  const { data: inventoryData } = useInventory();
+  const queryClient = useQueryClient();
+
+  const { data: salesData, isLoading: salesLoading } = useSales();
+  const { data: expensesData, isLoading: expensesLoading } = useExpenses();
+  const { data: inventoryData, isLoading: inventoryLoading } = useInventory();
+
+  useEffect(() => {
+    const refreshSales = () => {
+      queryClient.invalidateQueries({ queryKey: ["sales"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+    };
+
+    const refreshExpenses = () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    };
+
+    const refreshInventory = () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory"] });
+    };
+
+    socket.on("sales:changed", refreshSales);
+    socket.on("expenses:changed", refreshExpenses);
+    socket.on("inventory:changed", refreshInventory);
+
+    return () => {
+      socket.off("sales:changed", refreshSales);
+      socket.off("expenses:changed", refreshExpenses);
+      socket.off("inventory:changed", refreshInventory);
+    };
+  }, [queryClient]);
 
   const sales: Sale[] = Array.isArray(salesData) ? salesData : [];
   const expenses: Expense[] = Array.isArray(expensesData) ? expensesData : [];
@@ -55,96 +83,108 @@ export default function HomePage() {
     ? inventoryData
     : [];
 
-  const todayDate = today();
+  const dashboardData = useMemo(() => {
+    const totalBenta = sales.reduce(
+      (sum, sale) => sum + Number(sale.amount || 0),
+      0,
+    );
 
-  const todaysSales = sales.filter(
-    (sale) => sale.date?.slice(0, 10) === todayDate,
-  );
+    const totalGastos = expenses.reduce(
+      (sum, expense) => sum + Number(expense.amount || 0),
+      0,
+    );
 
-  const todaysExpenses = expenses.filter(
-    (expense) => expense.date?.slice(0, 10) === todayDate,
-  );
+    const totalTubo = totalBenta - totalGastos;
 
-  const totalBenta = todaysSales.reduce(
-    (sum, sale) => sum + Number(sale.amount || 0),
-    0,
-  );
+    const topItem = Object.entries(
+      sales.reduce<Record<string, number>>((map, sale) => {
+        map[sale.item] = (map[sale.item] || 0) + Number(sale.amount || 0);
+        return map;
+      }, {}),
+    ).sort((a, b) => b[1] - a[1])[0];
 
-  const totalGastos = todaysExpenses.reduce(
-    (sum, expense) => sum + Number(expense.amount || 0),
-    0,
-  );
+    const lowStockItems = inventory.filter(
+      (item) => Number(item.stock || 0) <= Number(item.lowStockLevel || 0),
+    );
 
-  const totalTubo = totalBenta - totalGastos;
+    return {
+      sales,
+      expenses,
+      totalBenta,
+      totalGastos,
+      totalTubo,
+      topItem,
+      lowStockItems,
+    };
+  }, [sales, expenses, inventory]);
 
-  const topItem = Object.entries(
-    todaysSales.reduce<Record<string, number>>((map, sale) => {
-      map[sale.item] = (map[sale.item] || 0) + Number(sale.amount || 0);
-      return map;
-    }, {}),
-  ).sort((a, b) => b[1] - a[1])[0];
-
-  const lowStockItems = inventory.filter(
-    (item) => Number(item.stock || 0) <= Number(item.lowStockLevel || 0),
-  );
+  const isLoading = salesLoading || expensesLoading || inventoryLoading;
 
   return (
     <div className="home-page">
       <section className="hero-banner">
         <div>
           <p>TRACKABAO DASHBOARD</p>
-
           <h1>Kumusta ang negosyo today?</h1>
-
-          <span>Real-time tracking ng benta, gastos, at stock.</span>
+          <span>
+            {isLoading
+              ? "Loading latest business data..."
+              : "Real-time tracking ng benta, gastos, at stock."}
+          </span>
         </div>
       </section>
 
       <section className="stats-grid">
         <StatCard
           label="Benta"
-          value={money(totalBenta)}
+          value={money(dashboardData.totalBenta)}
           icon={ShoppingCart}
           tone="green"
-          hint={`${todaysSales.length} sales today`}
+          hint={`${dashboardData.sales.length} total sales`}
         />
 
         <StatCard
           label="Gastos"
-          value={money(totalGastos)}
+          value={money(dashboardData.totalGastos)}
           icon={ReceiptText}
           tone="red"
-          hint={`${todaysExpenses.length} expenses today`}
+          hint={`${dashboardData.expenses.length} total expenses`}
         />
 
         <StatCard
           label="Tubo"
-          value={money(totalTubo)}
+          value={money(dashboardData.totalTubo)}
           icon={TrendingUp}
-          tone={totalTubo >= 0 ? "yellow" : "red"}
-          hint={totalTubo >= 0 ? "Estimated profit" : "Lugi today"}
+          tone={dashboardData.totalTubo >= 0 ? "yellow" : "red"}
+          hint={dashboardData.totalTubo >= 0 ? "Estimated profit" : "Lugi"}
         />
 
         <StatCard
           label="Top Item"
-          value={topItem?.[0] || "—"}
+          value={dashboardData.topItem?.[0] || "—"}
           icon={Package}
           tone="blue"
-          hint={topItem ? money(topItem[1]) : "No sales today"}
+          hint={
+            dashboardData.topItem
+              ? money(dashboardData.topItem[1])
+              : "No sales yet"
+          }
         />
       </section>
 
       <section className="dashboard-grid">
-        <ActivityCard title="Recent Benta" subtitle="Latest sales today">
+        <ActivityCard title="Recent Benta" subtitle="Latest sales">
           <div className="activity-list">
-            {todaysSales.slice(0, 5).length === 0 ? (
-              <p className="muted">Wala pang benta today.</p>
+            {dashboardData.sales.slice(0, 5).length === 0 ? (
+              <p className="muted">Wala pang benta.</p>
             ) : (
-              todaysSales.slice(0, 5).map((sale) => (
+              dashboardData.sales.slice(0, 5).map((sale) => (
                 <div className="activity-row" key={sale._id}>
                   <div>
                     <strong>{sale.item}</strong>
-                    <span>{sale.paymentMethod} payment</span>
+                    <span>
+                      {sale.qty} qty • {sale.paymentMethod} payment
+                    </span>
                   </div>
 
                   <b>{money(sale.amount)}</b>
@@ -156,10 +196,10 @@ export default function HomePage() {
 
         <ActivityCard title="Low Stock Alerts" subtitle="Items needing refill">
           <div className="activity-list">
-            {lowStockItems.slice(0, 5).length === 0 ? (
+            {dashboardData.lowStockItems.slice(0, 5).length === 0 ? (
               <p className="muted">Okay lahat ng stock.</p>
             ) : (
-              lowStockItems.slice(0, 5).map((item) => (
+              dashboardData.lowStockItems.slice(0, 5).map((item) => (
                 <div className="activity-row" key={item._id}>
                   <div>
                     <strong>{item.name}</strong>
@@ -175,11 +215,8 @@ export default function HomePage() {
       </section>
 
       <SalesChart />
-
       <SalesTable />
-
       <InventoryTable />
-
       <ExpensesTable />
     </div>
   );

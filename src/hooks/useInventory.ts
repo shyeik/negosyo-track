@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import {
   createInventoryItem,
   deleteInventoryItem,
   getInventory,
+  updateInventoryItem,
   updateInventoryStock,
 } from "../api/inventory.api";
 
@@ -33,6 +33,20 @@ export const useUpdateInventoryStock = () => {
 
   return useMutation({
     mutationFn: updateInventoryStock,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["inventory"],
+      });
+    },
+  });
+};
+
+export const useUpdateInventoryItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateInventoryItem,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

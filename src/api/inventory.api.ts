@@ -1,18 +1,40 @@
 import axios from "axios";
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const API = axios.create({
   baseURL: `${BACKEND_URL}/api`,
 });
 
-export const getInventory = async () => {
-  const res = await API.get("/inventory");
-  return res.data;
+export type InventoryPayload = {
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  lowStockLevel: number;
 };
 
-export const createInventoryItem = async (data: any) => {
-  const res = await API.post("/inventory", data);
+export const getInventory = async () => {
+  const response = await API.get("/inventory");
+  return response.data;
+};
 
-  return res.data;
+export const createInventoryItem = async (payload: InventoryPayload) => {
+  const response = await API.post("/inventory", payload);
+
+  return response.data;
+};
+
+export const updateInventoryItem = async ({
+  id,
+  payload,
+}: {
+  id: string;
+  payload: InventoryPayload;
+}) => {
+  const response = await API.put(`/inventory/${id}`, payload);
+
+  return response.data;
 };
 
 export const updateInventoryStock = async ({
@@ -22,15 +44,17 @@ export const updateInventoryStock = async ({
   id: string;
   stock: number;
 }) => {
-  const res = await API.patch(`/inventory/${id}/stock`, {
+  const response = await API.patch(`/inventory/${id}/stock`, {
     stock,
   });
 
-  return res.data;
+  return response.data;
 };
 
 export const deleteInventoryItem = async (id: string) => {
-  const res = await API.delete(`/inventory/${id}`);
+  const response = await API.delete(`/inventory/${id}`);
 
-  return res.data;
+  return response.data;
 };
+
+export default API;
