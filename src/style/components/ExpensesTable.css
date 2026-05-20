@@ -1,20 +1,30 @@
+/* =========================================
+   EXPENSES TABLE
+========================================= */
+
 .et-card {
   width: 100%;
-  max-width: 100%;
   background: #ffffff;
   border-radius: 24px;
   padding: 24px;
   border: 1px solid #f1f5f9;
+
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
+
+/* =========================================
+   TOOLBAR
+========================================= */
 
 .et-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 20px;
+
   gap: 16px;
   flex-wrap: wrap;
+
+  margin-bottom: 22px;
 }
 
 .et-toolbar__left {
@@ -26,21 +36,31 @@
 .et-toolbar__title {
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
+  color: #1e293b;
 }
 
 .et-toolbar__count {
-  background: #f1f5f9;
-  color: #334155;
-  padding: 4px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 28px;
+  height: 28px;
+
+  padding: 0 10px;
+
   border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #475569;
+
   font-size: 12px;
   font-weight: 700;
 }
 
 .et-toolbar__total {
-  font-size: 14px;
   color: #64748b;
+  font-size: 14px;
   font-weight: 600;
 }
 
@@ -49,9 +69,12 @@
   font-weight: 800;
 }
 
+/* =========================================
+   TABLE
+========================================= */
+
 .et-scroll {
   width: 100%;
-  max-width: 100%;
   overflow-x: auto;
 }
 
@@ -62,19 +85,28 @@
 }
 
 .et thead th {
-  padding: 14px 18px;
+  padding: 15px 18px;
+
   background: #f8fafc;
+
   color: #475569;
+
   font-size: 13px;
   font-weight: 700;
+
   text-align: left;
+
   border-bottom: 1px solid #e2e8f0;
+
   white-space: nowrap;
 }
 
 .et tbody tr {
-  transition: background 0.2s ease;
   border-bottom: 1px solid #f1f5f9;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .et tbody tr:hover {
@@ -85,6 +117,8 @@
   padding: 18px;
   vertical-align: middle;
   white-space: nowrap;
+
+  color: #1e293b;
 }
 
 .et-cell-right {
@@ -95,12 +129,51 @@
   text-align: center;
 }
 
+/* =========================================
+   CONTENT
+========================================= */
+
+.et-desc {
+  display: block;
+
+  max-width: 260px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.et-date {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.et-amount {
+  display: block;
+
+  text-align: right;
+
+  color: #16a34a;
+  font-weight: 800;
+}
+
+/* =========================================
+   BADGES
+========================================= */
+
 .badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
   border-radius: 999px;
+
   padding: 6px 12px;
+
   font-size: 12px;
   font-weight: 700;
 }
@@ -130,34 +203,17 @@
   color: #475569;
 }
 
-.et-desc {
-  display: block;
-  max-width: 280px;
-  color: #0f172a;
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.et-date {
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.et-amount {
-  display: block;
-  text-align: right;
-  font-weight: 800;
-  color: #16a34a;
-}
+/* =========================================
+   ACTIONS
+========================================= */
 
 .table-actions {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+
   gap: 8px;
+
   width: 100%;
 }
 
@@ -167,14 +223,21 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+
   border: none;
   border-radius: 12px;
+
   padding: 10px 14px;
+
   font-size: 13px;
   font-weight: 700;
+
   cursor: pointer;
-  transition: 0.2s ease;
-  white-space: nowrap;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .btn-edit {
@@ -203,28 +266,39 @@
   cursor: not-allowed;
 }
 
+/* =========================================
+   EMPTY STATE
+========================================= */
+
 .et-empty {
-  padding: 70px 20px;
+  padding: 72px 20px;
   text-align: center;
 }
 
 .et-empty__icon {
   width: 64px;
   height: 64px;
+
   margin: 0 auto 18px;
+
   border-radius: 20px;
+
   background: #f8fafc;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   color: #94a3b8;
 }
 
 .et-empty__title {
+  margin-bottom: 8px;
+
+  color: #0f172a;
+
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
-  margin-bottom: 8px;
 }
 
 .et-empty__sub {
@@ -232,22 +306,30 @@
   font-size: 14px;
 }
 
+/* =========================================
+   MODAL BACKDROP
+========================================= */
+
 .modal-bg {
   position: fixed;
   inset: 0;
+
   z-index: 99999;
-  width: 100vw;
-  height: 100dvh;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   padding: 24px;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
+
+  background: rgba(255, 255, 255, 0.72);
+
+  backdrop-filter: blur(8px);
+
   opacity: 0;
   pointer-events: none;
+
   transition: opacity 0.25s ease;
-  overflow-y: auto;
 }
 
 .modal-bg--on {
@@ -255,16 +337,29 @@
   pointer-events: auto;
 }
 
+/* =========================================
+   MODAL
+========================================= */
+
 .modal {
   width: min(100%, 560px);
   max-height: calc(100dvh - 48px);
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 28px;
-  transform: translateY(16px) scale(0.96);
-  transition: transform 0.25s ease;
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
+
   overflow-y: auto;
+
+  background: #ffffff;
+
+  border-radius: 24px;
+
+  padding: 28px;
+
+  transform: translateY(20px) scale(0.96);
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 .modal--on {
@@ -272,14 +367,16 @@
 }
 
 .edit-modal {
-  width: min(100%, 560px);
   max-width: 560px;
 }
 
 .delete-modal {
-  width: min(100%, 420px);
   max-width: 420px;
 }
+
+/* =========================================
+   MODAL HEADER
+========================================= */
 
 .modal__head {
   margin-bottom: 20px;
@@ -289,34 +386,44 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+
   gap: 16px;
 }
 
 .modal__title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
   margin-bottom: 8px;
+
+  color: #0f172a;
+
+  font-size: 24px;
+  font-weight: 800;
 }
 
 .modal__sub {
+  color: #64748b;
+
   font-size: 14px;
   line-height: 1.6;
-  color: #64748b;
 }
 
 .modal__close {
-  width: 36px;
-  height: 36px;
-  border: 1px solid #e5e7eb;
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
+
   background: #ffffff;
+
   color: #64748b;
-  cursor: pointer;
+
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: 0.2s ease;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
 }
 
 .modal__close:hover {
@@ -324,10 +431,195 @@
   color: #0f172a;
 }
 
+/* =========================================
+   FORM
+========================================= */
+
+.ef {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ef__label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ef__req {
+  color: #dc2626;
+}
+
+.ef__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ef input,
+.ef select {
+  width: 100%;
+
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+
+  background: #ffffff;
+
+  padding: 12px 14px;
+
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ef input:focus,
+.ef select:focus {
+  border-color: #f59e0b;
+
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
+}
+
+/* =========================================
+   CHIPS
+========================================= */
+
+.ef__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+
+  background: #f8fafc;
+
+  padding: 8px 13px;
+
+  color: #475569;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.chip:hover {
+  background: #f1f5f9;
+}
+
+.chip--on {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+
+  color: #111827;
+
+  border-color: #f59e0b;
+}
+
+/* =========================================
+   AMOUNT
+========================================= */
+
+.ef__amount {
+  position: relative;
+}
+
+.ef__peso {
+  position: absolute;
+
+  left: 14px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  color: #64748b;
+  font-weight: 800;
+
+  pointer-events: none;
+}
+
+.ef__amount input {
+  padding-left: 32px;
+}
+
+.ef__hint {
+  margin-top: 8px;
+
+  color: #dc2626;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================================
+   SUBMIT
+========================================= */
+
+.ef__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  border: none;
+  border-radius: 14px;
+
+  padding: 13px 18px;
+
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+
+  color: #111827;
+
+  font-size: 14px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ef__submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+
+  box-shadow: 0 16px 32px rgba(249, 115, 22, 0.18);
+}
+
+.ef__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   DELETE ACTIONS
+========================================= */
+
 .delete-modal__actions {
   display: flex;
   justify-content: flex-end;
+
   gap: 12px;
+
   margin-top: 28px;
 }
 
@@ -335,10 +627,14 @@
 .delete-modal__confirm {
   border: none;
   border-radius: 14px;
+
   padding: 12px 18px;
+
   font-size: 14px;
   font-weight: 700;
+
   cursor: pointer;
+
   transition: all 0.2s ease;
 }
 
@@ -360,145 +656,19 @@
   background: #b91c1c;
 }
 
-.delete-modal__confirm:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.ef {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.ef__label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #334155;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.ef__req {
-  color: #dc2626;
-}
-
-.ef__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.ef input,
-.ef select {
-  width: 100%;
-  border: 1px solid #dbe3ee;
-  border-radius: 14px;
-  background: #f8fafc;
-  padding: 12px 14px;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 600;
-  outline: none;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.ef input:focus,
-.ef select:focus {
-  border-color: #f59e0b;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
-}
-
-.ef__chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chip {
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  color: #475569;
-  border-radius: 999px;
-  padding: 8px 13px;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.chip:hover {
-  background: #f1f5f9;
-}
-
-.chip--on {
-  background: #0f172a;
-  color: #ffffff;
-  border-color: #0f172a;
-}
-
-.ef__amount {
-  position: relative;
-}
-
-.ef__peso {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748b;
-  font-weight: 800;
-  pointer-events: none;
-}
-
-.ef__amount input {
-  padding-left: 32px;
-}
-
-.ef__hint {
-  margin-top: 8px;
-  color: #dc2626;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.ef__submit {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  border: none;
-  border-radius: 14px;
-  padding: 13px 18px;
-  background: linear-gradient(135deg, #fbbf24, #f97316);
-  color: #111827;
-  font-size: 14px;
-  font-weight: 900;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.ef__submit:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 32px rgba(249, 115, 22, 0.22);
-}
-
-.ef__submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+/* =========================================
+   LOADING
+========================================= */
 
 .skel {
   height: 14px;
+
   border-radius: 999px;
+
   background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
+
   background-size: 200% 100%;
+
   animation: shimmer 1.5s infinite linear;
 }
 
@@ -522,14 +692,14 @@
   }
 }
 
+/* =========================================
+   RESPONSIVE
+========================================= */
+
 @media (max-width: 768px) {
   .et-card {
     padding: 18px;
     border-radius: 20px;
-  }
-
-  .et {
-    min-width: 760px;
   }
 
   .et td,
@@ -537,15 +707,9 @@
     padding: 14px;
   }
 
-  .modal-bg {
-    padding: 16px;
-    align-items: center;
-  }
-
   .modal {
-    border-radius: 20px;
     padding: 20px;
-    max-height: calc(100dvh - 48px);
+    border-radius: 20px;
   }
 
   .ef__grid {
@@ -560,59 +724,4 @@
   .delete-modal__confirm {
     width: 100%;
   }
-}
-
-/* FORCE EXPENSE TABLE LIGHT STYLE */
-
-.et-card {
-  background: #ffffff !important;
-  border: 1px solid #f1f5f9 !important;
-}
-
-.et-toolbar {
-  border-bottom: 0 !important;
-}
-
-.et-toolbar__title {
-  color: #0f172a !important;
-}
-
-.et {
-  background: #ffffff !important;
-}
-
-.et thead {
-  background: transparent !important;
-}
-
-.et thead th {
-  background: #f8fafc !important;
-  color: #475569 !important;
-  border-bottom: 1px solid #e2e8f0 !important;
-}
-
-.et tbody tr {
-  background: #ffffff !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-}
-
-.et tbody tr:hover {
-  background: #f8fafc !important;
-}
-
-.et td {
-  color: #0f172a !important;
-  border-top: 0 !important;
-}
-
-.et-desc {
-  color: #0f172a !important;
-}
-
-.et-date {
-  color: #64748b !important;
-}
-
-.et-amount {
-  color: #16a34a !important;
 }

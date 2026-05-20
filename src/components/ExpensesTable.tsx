@@ -74,11 +74,11 @@ const formatDate = (date?: string) => {
 function TableHead() {
   return (
     <tr>
-      <th>Kategorya</th>
+      <th>Category</th>
       <th>Description</th>
-      <th>Petsa</th>
+      <th>Date</th>
       <th className="et-cell-right">Amount</th>
-      <th className="et-cell-right">Aksyon</th>
+      <th className="et-cell-right"></th>
     </tr>
   );
 }

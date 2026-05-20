@@ -48,11 +48,11 @@ function TableHead() {
     <tr>
       <th>Item</th>
       <th>Category</th>
-      <th>Presyo</th>
+      <th>Price</th>
       <th>Stock</th>
       <th>Status</th>
       <th style={{ textAlign: "right" }}>Controls</th>
-      <th style={{ textAlign: "right" }}>Aksyon</th>
+      <th style={{ textAlign: "right" }}></th>
     </tr>
   );
 }

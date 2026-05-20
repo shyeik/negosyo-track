@@ -82,7 +82,7 @@ function TableHead() {
       <th>Customer</th>
       <th>Date</th>
       <th>Status</th>
-      <th style={{ textAlign: "right" }}>Aksyon</th>
+      <th style={{ textAlign: "right" }}></th>
     </tr>
   );
 }

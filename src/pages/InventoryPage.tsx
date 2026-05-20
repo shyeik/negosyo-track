@@ -51,7 +51,7 @@ function InventoryForm({ onSuccess }: InventoryFormProps) {
 
     if (!form.name.trim()) nextErrors.name = "Kailangan ng item name.";
     if (!form.category.trim()) nextErrors.category = "Kailangan ng category.";
-    if (form.price <= 0) nextErrors.price = "Dapat higit sa 0 ang presyo.";
+    if (form.price <= 0) nextErrors.price = "Dapat higit sa 0 ang price.";
     if (form.stock < 0) nextErrors.stock = "Hindi puwedeng negative ang stock.";
     if (form.lowStockLevel < 0)
       nextErrors.lowStockLevel = "Hindi puwedeng negative.";
@@ -277,7 +277,7 @@ export default function InventoryPage() {
           <h1 className="ep__title">Imbentaryo</h1>
 
           <p className="ep__sub">
-            Manage stock, presyo, category, at low-stock alerts.
+            Manage stock, price, category, at low-stock alerts.
           </p>
         </div>
 

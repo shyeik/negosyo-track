@@ -490,54 +490,46 @@ img {
 /* =========================
    TABLES
 ========================= */
+/* =========================
+   TABLES LIGHT MODE
+========================= */
 
 .et-card {
   overflow: hidden;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
+
+  background: #ffffff;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 24px;
+
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
 
 .et-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   gap: 16px;
   flex-wrap: wrap;
-  padding: 20px 22px;
-  border-bottom: 1px solid var(--border);
-}
 
-.et-toolbar__left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .et-toolbar__title {
-  font-size: 15px;
-  font-weight: 900;
+  color: #0f172a;
 }
 
 .et-toolbar__count {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(148, 163, 184, 0.12);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
+  background: #f1f5f9;
+  color: #475569;
 }
 
 .et-toolbar__total {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.et-toolbar__total-val {
-  color: var(--green);
-  font-weight: 900;
+  color: #64748b;
 }
 
 .et-scroll {
@@ -547,28 +539,39 @@ img {
 .et {
   width: 100%;
   border-collapse: collapse;
+
+  background: #ffffff;
 }
 
 .et thead {
-  background: rgba(15, 23, 42, 0.9);
+  background: #f8fafc;
 }
 
 .et th {
   padding: 14px 18px;
+
   text-align: left;
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  border-bottom: 1px solid #e2e8f0;
+
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .et td {
-  padding: 16px 18px;
-  border-top: 1px solid rgba(148, 163, 184, 0.08);
-  color: #e5e7eb;
+  padding: 18px;
+
+  border-top: 1px solid #f1f5f9;
+
+  color: #0f172a;
+
   font-size: 14px;
+
   vertical-align: middle;
 }
 
@@ -577,35 +580,16 @@ img {
 }
 
 .et tbody tr:hover {
-  background: rgba(148, 163, 184, 0.06);
-}
-
-.et th:last-child,
-.et td:last-child {
-  text-align: right;
-}
-
-.et-desc {
-  max-width: 260px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  background: #f8fafc;
 }
 
 .et-date {
-  color: var(--muted);
-  white-space: nowrap;
+  color: #64748b;
 }
 
 .et-amount {
+  color: #16a34a;
   font-weight: 900;
-  color: #ffffff;
-  white-space: nowrap;
-}
-
-.et-actions {
-  display: flex;
-  justify-content: flex-end;
 }
 
 .badge {
