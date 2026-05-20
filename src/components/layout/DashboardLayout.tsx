@@ -17,11 +17,11 @@ export default function DashboardLayout({
     <div className="website-shell">
       <Sidebar activePage={activePage} onChangePage={onChangePage} />
 
-      <div className="website-main">
+      <section className="website-main">
         <Header />
 
         <main className="website-content">{children}</main>
-      </div>
+      </section>
     </div>
   );
 }

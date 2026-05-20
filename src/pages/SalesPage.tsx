@@ -4,8 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import SalesTable from "../components/SalesTable";
 import { useCreateSale } from "../hooks/useSales";
 
-import "../style/pages/ExpensesPage.css";
-
 type PaymentMethod = "Cash" | "GCash" | "Maya" | "Card";
 
 type SaleFormData = {

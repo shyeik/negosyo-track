@@ -1,4 +1,6 @@
 .et-card {
+  width: 100%;
+  max-width: 100%;
   background: #ffffff;
   border-radius: 24px;
   padding: 24px;
@@ -49,11 +51,13 @@
 
 .et-scroll {
   width: 100%;
+  max-width: 100%;
   overflow-x: auto;
 }
 
 .et {
   width: 100%;
+  min-width: 760px;
   border-collapse: collapse;
 }
 
@@ -65,10 +69,11 @@
   font-weight: 700;
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
 .et tbody tr {
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
   border-bottom: 1px solid #f1f5f9;
 }
 
@@ -79,6 +84,15 @@
 .et td {
   padding: 18px;
   vertical-align: middle;
+  white-space: nowrap;
+}
+
+.et-cell-right {
+  text-align: right;
+}
+
+.et-cell-center {
+  text-align: center;
 }
 
 .badge {
@@ -117,13 +131,19 @@
 }
 
 .et-desc {
+  display: block;
+  max-width: 280px;
   color: #0f172a;
-  font-weight: 600;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .et-date {
   color: #64748b;
   font-size: 14px;
+  font-weight: 600;
 }
 
 .et-amount {
@@ -133,30 +153,51 @@
   color: #16a34a;
 }
 
-.et-actions {
+.table-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
 }
 
+.btn-edit,
 .btn-del {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   border: none;
   border-radius: 12px;
   padding: 10px 14px;
-  background: #fee2e2;
-  color: #dc2626;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-edit {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.btn-edit:hover {
+  background: #bfdbfe;
+  transform: translateY(-1px);
+}
+
+.btn-del {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .btn-del:hover {
   background: #fecaca;
+  transform: translateY(-1px);
 }
 
+.btn-edit:disabled,
 .btn-del:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -194,16 +235,19 @@
 .modal-bg {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(4px);
+  z-index: 99999;
+  width: 100vw;
+  height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  z-index: 999;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
   opacity: 0;
   pointer-events: none;
-  transition: all 0.25s ease;
+  transition: opacity 0.25s ease;
+  overflow-y: auto;
 }
 
 .modal-bg--on {
@@ -212,22 +256,40 @@
 }
 
 .modal {
-  width: 100%;
-  max-width: 420px;
+  width: min(100%, 560px);
+  max-height: calc(100dvh - 48px);
   background: #ffffff;
   border-radius: 24px;
-  padding: 24px;
-  transform: translateY(20px) scale(0.96);
-  transition: all 0.25s ease;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  padding: 28px;
+  transform: translateY(16px) scale(0.96);
+  transition: transform 0.25s ease;
+  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.35);
+  overflow-y: auto;
 }
 
 .modal--on {
   transform: translateY(0) scale(1);
 }
 
+.edit-modal {
+  width: min(100%, 560px);
+  max-width: 560px;
+}
+
+.delete-modal {
+  width: min(100%, 420px);
+  max-width: 420px;
+}
+
 .modal__head {
-  margin-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.modal__head--between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .modal__title {
@@ -241,6 +303,25 @@
   font-size: 14px;
   line-height: 1.6;
   color: #64748b;
+}
+
+.modal__close {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.modal__close:hover {
+  background: #f8fafc;
+  color: #0f172a;
 }
 
 .delete-modal__actions {
@@ -279,12 +360,150 @@
   background: #b91c1c;
 }
 
+.delete-modal__confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ef {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.ef__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #334155;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ef__req {
+  color: #dc2626;
+}
+
+.ef__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ef input,
+.ef select {
+  width: 100%;
+  border: 1px solid #dbe3ee;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 12px 14px;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ef input:focus,
+.ef select:focus {
+  border-color: #f59e0b;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14);
+}
+
+.ef__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  border-radius: 999px;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.chip:hover {
+  background: #f1f5f9;
+}
+
+.chip--on {
+  background: #0f172a;
+  color: #ffffff;
+  border-color: #0f172a;
+}
+
+.ef__amount {
+  position: relative;
+}
+
+.ef__peso {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.ef__amount input {
+  padding-left: 32px;
+}
+
+.ef__hint {
+  margin-top: 8px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ef__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: none;
+  border-radius: 14px;
+  padding: 13px 18px;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ef__submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 32px rgba(249, 115, 22, 0.22);
+}
+
+.ef__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .skel {
   height: 14px;
   border-radius: 999px;
   background: linear-gradient(90deg, #e2e8f0 25%, #f8fafc 50%, #e2e8f0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes shimmer {
@@ -297,10 +516,20 @@
   }
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   .et-card {
     padding: 18px;
     border-radius: 20px;
+  }
+
+  .et {
+    min-width: 760px;
   }
 
   .et td,
@@ -308,9 +537,19 @@
     padding: 14px;
   }
 
+  .modal-bg {
+    padding: 16px;
+    align-items: center;
+  }
+
   .modal {
     border-radius: 20px;
     padding: 20px;
+    max-height: calc(100dvh - 48px);
+  }
+
+  .ef__grid {
+    grid-template-columns: 1fr;
   }
 
   .delete-modal__actions {
@@ -323,42 +562,57 @@
   }
 }
 
-.table-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
+/* FORCE EXPENSE TABLE LIGHT STYLE */
+
+.et-card {
+  background: #ffffff !important;
+  border: 1px solid #f1f5f9 !important;
 }
 
-.btn-edit,
-.btn-del {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: 0.2s ease;
+.et-toolbar {
+  border-bottom: 0 !important;
 }
 
-.btn-edit {
-  background: #dbeafe;
-  color: #1d4ed8;
+.et-toolbar__title {
+  color: #0f172a !important;
 }
 
-.btn-edit:hover {
-  background: #bfdbfe;
+.et {
+  background: #ffffff !important;
 }
 
-.modal__head--between {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+.et thead {
+  background: transparent !important;
 }
 
-.edit-modal {
-  max-width: 520px;
+.et thead th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.et tbody tr {
+  background: #ffffff !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.et tbody tr:hover {
+  background: #f8fafc !important;
+}
+
+.et td {
+  color: #0f172a !important;
+  border-top: 0 !important;
+}
+
+.et-desc {
+  color: #0f172a !important;
+}
+
+.et-date {
+  color: #64748b !important;
+}
+
+.et-amount {
+  color: #16a34a !important;
 }

@@ -1,9 +1,11 @@
+// components/form/ExpenseForm.tsx
 import { Loader2, ReceiptText } from "lucide-react";
 import { useState } from "react";
 
 import { useCreateExpense } from "../../hooks/useExpenses";
+import "../../style/form/ExpenseForm.css";
 
-import "../../style/form/AddExpensesForm.css";
+// ─── Types ────────────────────────────────────────────────
 
 type ExpenseCategory = "Supplies" | "Utilities" | "Rent" | "Delivery" | "Other";
 
@@ -14,6 +16,16 @@ type ExpenseForm = {
   date: string;
 };
 
+// ─── Constants ────────────────────────────────────────────
+
+const CATEGORIES: ExpenseCategory[] = [
+  "Supplies",
+  "Utilities",
+  "Rent",
+  "Delivery",
+  "Other",
+];
+
 const today = () => new Date().toISOString().slice(0, 10);
 
 const initialForm: ExpenseForm = {
@@ -23,13 +35,30 @@ const initialForm: ExpenseForm = {
   date: today(),
 };
 
-export default function AddExpenseForm() {
-  const createExpense = useCreateExpense();
+// ─── Props ────────────────────────────────────────────────
 
+interface ExpenseFormProps {
+  onSuccess?: () => void;
+}
+
+// ─── Component ────────────────────────────────────────────
+
+export default function ExpenseForm({ onSuccess }: ExpenseFormProps) {
+  const createExpense = useCreateExpense();
   const [form, setForm] = useState<ExpenseForm>(initialForm);
+  const [errors, setErrors] = useState<Partial<Record<keyof ExpenseForm, string>>>({});
+
+  const validate = (): boolean => {
+    const next: typeof errors = {};
+    if (!form.description.trim()) next.description = "Kailangan ng description.";
+    if (form.amount <= 0) next.amount = "Dapat higit sa 0 ang amount.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validate()) return;
 
     const payload = {
       ...form,
@@ -37,125 +66,110 @@ export default function AddExpenseForm() {
       amount: Number(form.amount),
     };
 
-    if (!payload.description) {
-      alert("Lagyan ng description.");
-      return;
-    }
-
-    if (payload.amount <= 0) {
-      alert("Invalid amount.");
-      return;
-    }
-
     createExpense.mutate(payload, {
       onSuccess: () => {
         setForm(initialForm);
+        setErrors({});
+        onSuccess?.();
       },
     });
   };
 
-  return (
-    <section className="add-expense-form">
-      <div className="add-expense-form__header">
-        <div>
-          <h3>Mag-log ng Gastos</h3>
+  const setField = <K extends keyof ExpenseForm>(key: K, value: ExpenseForm[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
+  };
 
-          <p>I-record ang business expenses.</p>
+  return (
+    <form className="expense-form" onSubmit={handleSubmit} noValidate>
+      {/* Category */}
+      <div className="expense-field">
+        <label className="expense-field__label">
+          Kategorya <span className="expense-field__required">*</span>
+        </label>
+        <div className="expense-field__chips">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              className={`expense-chip${form.category === cat ? " expense-chip--active" : ""}`}
+              onClick={() => setField("category", cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="expense-form-grid">
-          <label>
-            <span>Kategorya</span>
+      {/* Description */}
+      <div className="expense-field">
+        <label className="expense-field__label">
+          Description <span className="expense-field__required">*</span>
+        </label>
+        <input
+          type="text"
+          placeholder="Hal. Electric bill, office supplies…"
+          value={form.description}
+          onChange={(e) => setField("description", e.target.value)}
+          autoComplete="off"
+        />
+        {errors.description && (
+          <span className="expense-field__hint">{errors.description}</span>
+        )}
+      </div>
 
-            <select
-              value={form.category}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  category: e.target.value as ExpenseCategory,
-                }))
-              }
-            >
-              <option value="Supplies">Supplies</option>
-
-              <option value="Utilities">Utilities</option>
-
-              <option value="Rent">Rent</option>
-
-              <option value="Delivery">Delivery</option>
-
-              <option value="Other">Other</option>
-            </select>
+      {/* Amount + Date in grid */}
+      <div className="expense-form__grid">
+        {/* Amount */}
+        <div className="expense-field">
+          <label className="expense-field__label">
+            Amount <span className="expense-field__required">*</span>
           </label>
-
-          <label>
-            <span>Description</span>
-
-            <input
-              type="text"
-              placeholder="Hal. Electric bill"
-              value={form.description}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  description: e.target.value,
-                }))
-              }
-            />
-          </label>
-
-          <label>
-            <span>Amount</span>
-
+          <div className="expense-field__amount-wrapper">
+            <span className="expense-field__amount-prefix">₱</span>
             <input
               type="number"
               min="0"
-              value={form.amount}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  amount: Number(e.target.value),
-                }))
-              }
+              step="0.01"
+              value={form.amount === 0 ? "" : form.amount}
+              placeholder="0.00"
+              onChange={(e) => setField("amount", Number(e.target.value))}
             />
-          </label>
-
-          <label>
-            <span>Date</span>
-
-            <input
-              type="date"
-              value={form.date}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  date: e.target.value,
-                }))
-              }
-            />
-          </label>
+          </div>
+          {errors.amount && (
+            <span className="expense-field__hint">{errors.amount}</span>
+          )}
         </div>
 
-        <button
-          type="submit"
-          className="submit-expense-btn"
-          disabled={createExpense.isPending}
-        >
-          {createExpense.isPending ? (
-            <>
-              <Loader2 size={18} className="spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <ReceiptText size={18} />
-              Save Expense
-            </>
-          )}
-        </button>
-      </form>
-    </section>
+        {/* Date */}
+        <div className="expense-field">
+          <label className="expense-field__label">Date</label>
+          <input
+            type="date"
+            value={form.date}
+            onChange={(e) => setField("date", e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        className="expense-form__submit"
+        disabled={createExpense.isPending}
+      >
+        {createExpense.isPending ? (
+          <>
+            <Loader2 size={16} className="spin" />
+            Sine-save…
+          </>
+        ) : (
+          <>
+            <ReceiptText size={16} />
+            I-save ang Gastos
+          </>
+        )}
+      </button> 
+    </form>
   );
 }

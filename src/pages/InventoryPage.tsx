@@ -5,8 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 import InventoryTable from "../components/InventoryTable";
 import { useCreateInventoryItem } from "../hooks/useInventory";
 
-import "../style/pages/ExpensesPage.css";
-
 type InventoryFormData = {
   name: string;
   category: string;

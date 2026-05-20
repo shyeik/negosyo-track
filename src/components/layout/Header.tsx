@@ -1,5 +1,4 @@
 import { CalendarDays } from "lucide-react";
-import "../../style/components/layout/Header.css";
 
 export default function Header() {
   const today = new Date().toLocaleDateString("en-PH", {

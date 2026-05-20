@@ -7,7 +7,7 @@ import {
   useUpdateExpense,
 } from "../hooks/useExpenses";
 
-import "../style/components/ExpensesTable.css";
+import "../style/components/InventoryTable.css";
 
 type Category = "Supplies" | "Utilities" | "Rent" | "Delivery" | "Other";
 
@@ -77,8 +77,8 @@ function TableHead() {
       <th>Kategorya</th>
       <th>Description</th>
       <th>Petsa</th>
-      <th style={{ textAlign: "right" }}>Amount</th>
-      <th style={{ textAlign: "right" }}>Aksyon</th>
+      <th className="et-cell-right">Amount</th>
+      <th className="et-cell-right">Aksyon</th>
     </tr>
   );
 }
@@ -87,19 +87,19 @@ function SkeletonRow() {
   return (
     <tr className="skel-row">
       <td>
-        <div className="skel" style={{ width: 70 }} />
+        <div className="skel" style={{ width: 80 }} />
       </td>
       <td>
-        <div className="skel" style={{ width: 160 }} />
+        <div className="skel" style={{ width: 180 }} />
       </td>
       <td>
-        <div className="skel" style={{ width: 90 }} />
+        <div className="skel" style={{ width: 100 }} />
       </td>
       <td>
-        <div className="skel" style={{ width: 70, marginLeft: "auto" }} />
+        <div className="skel" style={{ width: 90, marginLeft: "auto" }} />
       </td>
       <td>
-        <div className="skel" style={{ width: 120, marginLeft: "auto" }} />
+        <div className="skel" style={{ width: 150, marginLeft: "auto" }} />
       </td>
     </tr>
   );
@@ -185,7 +185,7 @@ function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
         },
       },
       {
-        onSuccess: () => onClose(),
+        onSuccess: onClose,
       },
     );
   };
@@ -420,13 +420,13 @@ export default function ExpensesTable() {
                         </span>
                       </td>
 
-                      <td>
+                      <td className="et-cell-right">
                         <span className="et-amount">
                           {formatAmount(expense.amount)}
                         </span>
                       </td>
 
-                      <td>
+                      <td className="et-cell-right">
                         <div className="table-actions">
                           <button
                             type="button"
@@ -464,7 +464,16 @@ export default function ExpensesTable() {
       />
 
       {expenseToDelete && (
-        <div className="modal-bg modal-bg--on" role="dialog" aria-modal="true">
+        <div
+          className="modal-bg modal-bg--on"
+          role="dialog"
+          aria-modal="true"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setExpenseToDelete(null);
+            }
+          }}
+        >
           <div className="modal modal--on delete-modal">
             <div className="modal__head">
               <div>
