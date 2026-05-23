@@ -94,7 +94,7 @@ function ExpenseForm({ onSuccess }: ExpenseFormProps) {
     <form className="ef" onSubmit={handleSubmit} noValidate>
       <div>
         <span className="ef__label">
-          Kategorya <span className="ef__req">*</span>
+          Category <span className="ef__req">*</span>
         </span>
 
         <div className="ef__chips">
@@ -234,7 +234,7 @@ function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
               <Receipt size={20} />
             </div>
 
-            <h2 className="modal__title">Mag-log ng Gastos</h2>
+            <h2 className="modal__title">Add Expenses</h2>
 
             <p className="modal__sub">I-record ang bagong business expense.</p>
           </div>
@@ -269,7 +269,7 @@ export default function ExpensesPage() {
     <div className="ep">
       <header className="ep__header">
         <div>
-          <p className="ep__eyebrow">Gastos Management</p>
+          <p className="ep__eyebrow">Expenses Management</p>
 
           <h1 className="ep__title">Mga Gastos</h1>
 
@@ -279,7 +279,7 @@ export default function ExpensesPage() {
         </div>
 
         <button className="btn-add" onClick={open} type="button">
-          <Plus size={16} /> Mag-log ng Gastos
+          <Plus size={16} /> Add Expense
         </button>
       </header>
 

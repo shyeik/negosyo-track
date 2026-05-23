@@ -252,3 +252,41 @@
     font-size: 11px;
   }
 }
+
+.it-toolbar__right,
+.st-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.it-download,
+.st-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+  padding: 9px 13px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.it-download:hover,
+.st-download:hover {
+  background: rgba(34, 197, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .it-toolbar__right,
+  .st-toolbar__right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

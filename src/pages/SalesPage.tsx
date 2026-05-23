@@ -234,10 +234,8 @@ function AddSaleModal({
             <div className="modal__icon">
               <Receipt size={20} />
             </div>
-            <h2 className="modal__title">Mag-log ng Sale</h2>
-            <p className="modal__sub">
-              I-record ang bagong benta o transaction.
-            </p>
+            <h2 className="modal__title">Add Sale</h2>
+            <p className="modal__sub">I-record ang bagong transaction.</p>
           </div>
 
           <button className="modal__close" onClick={onClose} type="button">
@@ -266,14 +264,14 @@ export default function SalesPage() {
       <header className="ep__header">
         <div>
           <p className="ep__eyebrow">Sales Management</p>
-          <h1 className="ep__title">Benta</h1>
+          <h1 className="ep__title">Sales</h1>
           <p className="ep__sub">
             I-log, i-monitor, at i-manage ang lahat ng sales transactions.
           </p>
         </div>
 
         <button className="btn-add" onClick={open} type="button">
-          <Plus size={16} /> Mag-log ng Sale
+          <Plus size={16} /> Add Sale
         </button>
       </header>
 

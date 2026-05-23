@@ -1,5 +1,6 @@
 import {
   AlertTriangle,
+  Download,
   Loader2,
   Minus,
   Package,
@@ -42,6 +43,39 @@ const formatAmount = (value: number) =>
     currency: "PHP",
     minimumFractionDigits: 2,
   }).format(Number(value || 0));
+
+const getInventoryList = (data: unknown): InventoryItem[] => {
+  if (Array.isArray(data)) return data;
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "inventory" in data &&
+    Array.isArray((data as { inventory?: InventoryItem[] }).inventory)
+  ) {
+    return (data as { inventory: InventoryItem[] }).inventory;
+  }
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "items" in data &&
+    Array.isArray((data as { items?: InventoryItem[] }).items)
+  ) {
+    return (data as { items: InventoryItem[] }).items;
+  }
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "data" in data &&
+    Array.isArray((data as { data?: InventoryItem[] }).data)
+  ) {
+    return (data as { data: InventoryItem[] }).data;
+  }
+
+  return [];
+};
 
 function TableHead() {
   return (
@@ -137,25 +171,13 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
 
     const nextErrors: Partial<Record<keyof InventoryFormData, string>> = {};
 
-    if (!form.name.trim()) {
-      nextErrors.name = "Kailangan ng item name.";
-    }
-
-    if (!form.category.trim()) {
-      nextErrors.category = "Kailangan ng category.";
-    }
-
-    if (!form.price || form.price <= 0) {
+    if (!form.name.trim()) nextErrors.name = "Kailangan ng item name.";
+    if (!form.category.trim()) nextErrors.category = "Kailangan ng category.";
+    if (!form.price || form.price <= 0)
       nextErrors.price = "Dapat higit sa 0 ang presyo.";
-    }
-
-    if (form.stock < 0) {
-      nextErrors.stock = "Hindi puwedeng negative ang stock.";
-    }
-
-    if (form.lowStockLevel < 0) {
+    if (form.stock < 0) nextErrors.stock = "Hindi puwedeng negative ang stock.";
+    if (form.lowStockLevel < 0)
       nextErrors.lowStockLevel = "Hindi puwedeng negative.";
-    }
 
     setErrors(nextErrors);
 
@@ -196,12 +218,7 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
             </p>
           </div>
 
-          <button
-            type="button"
-            className="modal__close"
-            onClick={onClose}
-            aria-label="Close edit modal"
-          >
+          <button type="button" className="modal__close" onClick={onClose}>
             <X size={16} />
           </button>
         </div>
@@ -211,14 +228,11 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
             <label className="ef__label">
               Item Name <span className="ef__req">*</span>
             </label>
-
             <input
               type="text"
-              placeholder="Hal. Bigas, softdrinks, LPG..."
               value={form.name}
               onChange={(event) => set("name", event.target.value)}
             />
-
             {errors.name && <p className="ef__hint">{errors.name}</p>}
           </div>
 
@@ -226,14 +240,11 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
             <label className="ef__label">
               Category <span className="ef__req">*</span>
             </label>
-
             <input
               type="text"
-              placeholder="Hal. Supplies, Drinks, Food..."
               value={form.category}
               onChange={(event) => set("category", event.target.value)}
             />
-
             {errors.category && <p className="ef__hint">{errors.category}</p>}
           </div>
 
@@ -242,40 +253,33 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
               <label className="ef__label">
                 Price <span className="ef__req">*</span>
               </label>
-
               <div className="ef__amount">
                 <span className="ef__peso">₱</span>
-
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  placeholder="0.00"
                   value={form.price === 0 ? "" : form.price}
                   onChange={(event) => set("price", Number(event.target.value))}
                 />
               </div>
-
               {errors.price && <p className="ef__hint">{errors.price}</p>}
             </div>
 
             <div>
               <label className="ef__label">Stock</label>
-
               <input
                 type="number"
                 min="0"
                 value={form.stock}
                 onChange={(event) => set("stock", Number(event.target.value))}
               />
-
               {errors.stock && <p className="ef__hint">{errors.stock}</p>}
             </div>
           </div>
 
           <div>
             <label className="ef__label">Low Stock Level</label>
-
             <input
               type="number"
               min="0"
@@ -284,7 +288,6 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
                 set("lowStockLevel", Number(event.target.value))
               }
             />
-
             {errors.lowStockLevel && (
               <p className="ef__hint">{errors.lowStockLevel}</p>
             )}
@@ -319,7 +322,7 @@ export default function InventoryTable() {
   const updateStock = useUpdateInventoryStock();
   const deleteItem = useDeleteInventoryItem();
 
-  const items: InventoryItem[] = Array.isArray(data) ? data : [];
+  const items = getInventoryList(data);
 
   const totalValue = items.reduce(
     (sum, item) => sum + Number(item.price || 0) * Number(item.stock || 0),
@@ -327,6 +330,59 @@ export default function InventoryTable() {
   );
 
   const count = items.length;
+
+  const downloadExcel = async () => {
+    const XLSX = await import("xlsx");
+
+    const rows: {
+      Item: string;
+      Category: string;
+      Price: number;
+      Stock: number;
+      "Low Stock Level": number;
+      Status: string;
+      "Inventory Value": number;
+    }[] = items.map((item) => {
+      const isLowStock = item.stock <= item.lowStockLevel;
+
+      return {
+        Item: item.name,
+        Category: item.category,
+        Price: Number(item.price || 0),
+        Stock: Number(item.stock || 0),
+        "Low Stock Level": Number(item.lowStockLevel || 0),
+        Status: isLowStock ? "Low Stock" : "Okay",
+        "Inventory Value": Number(item.price || 0) * Number(item.stock || 0),
+      };
+    });
+
+    rows.push({
+      Item: "TOTAL",
+      Category: "",
+      Price: 0,
+      Stock: 0,
+      "Low Stock Level": 0,
+      Status: "",
+      "Inventory Value": totalValue,
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    worksheet["!cols"] = [
+      { wch: 24 },
+      { wch: 18 },
+      { wch: 14 },
+      { wch: 10 },
+      { wch: 18 },
+      { wch: 14 },
+      { wch: 18 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inventory");
+    XLSX.writeFile(workbook, "inventory-report.xlsx");
+  };
 
   const handleStockUpdate = (item: InventoryItem, amount: number) => {
     const updatedStock = Math.max(0, item.stock + amount);
@@ -355,11 +411,22 @@ export default function InventoryTable() {
           </div>
 
           {!isLoading && count > 0 && (
-            <div className="it-toolbar__total">
-              Inventory Value:{" "}
-              <span className="it-toolbar__total-val">
-                {formatAmount(totalValue)}
-              </span>
+            <div className="it-toolbar__right">
+              <div className="it-toolbar__total">
+                Inventory Value:{" "}
+                <span className="it-toolbar__total-val">
+                  {formatAmount(totalValue)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="it-download"
+                onClick={downloadExcel}
+              >
+                <Download size={15} />
+                Download Excel
+              </button>
             </div>
           )}
         </div>
@@ -370,7 +437,6 @@ export default function InventoryTable() {
               <thead>
                 <TableHead />
               </thead>
-
               <tbody>
                 {Array.from({ length: 4 }).map((_, index) => (
                   <SkeletonRow key={`inventory-skeleton-${index}`} />
@@ -382,9 +448,7 @@ export default function InventoryTable() {
               <div className="it-empty__icon">
                 <Package size={24} />
               </div>
-
               <p className="it-empty__title">Walang inventory item pa</p>
-
               <p className="it-empty__sub">
                 Mag-add ng item para masimulan ang inventory tracking.
               </p>
@@ -394,7 +458,6 @@ export default function InventoryTable() {
               <thead>
                 <TableHead />
               </thead>
-
               <tbody>
                 {items.map((item) => {
                   const isLowStock = item.stock <= item.lowStockLevel;
@@ -404,26 +467,21 @@ export default function InventoryTable() {
                       <td>
                         <span className="it-name">{item.name}</span>
                       </td>
-
                       <td>
                         <span className="it-category">{item.category}</span>
                       </td>
-
                       <td>
                         <span className="it-price">
                           {formatAmount(item.price)}
                         </span>
                       </td>
-
                       <td>
                         <span className="it-stock">{item.stock}</span>
                       </td>
 
                       <td>
                         <span
-                          className={`stock-badge ${
-                            isLowStock ? "low" : "good"
-                          }`}
+                          className={`stock-badge ${isLowStock ? "low" : "good"}`}
                         >
                           {isLowStock && <AlertTriangle size={13} />}
                           {isLowStock ? "Low Stock" : "Okay"}
@@ -436,7 +494,6 @@ export default function InventoryTable() {
                             type="button"
                             onClick={() => handleStockUpdate(item, -1)}
                             disabled={item.stock <= 0 || updateStock.isPending}
-                            aria-label={`Decrease ${item.name} stock`}
                           >
                             <Minus size={15} />
                           </button>
@@ -445,7 +502,6 @@ export default function InventoryTable() {
                             type="button"
                             onClick={() => handleStockUpdate(item, 1)}
                             disabled={updateStock.isPending}
-                            aria-label={`Increase ${item.name} stock`}
                           >
                             <Plus size={15} />
                           </button>
@@ -458,17 +514,15 @@ export default function InventoryTable() {
                             type="button"
                             className="btn-edit"
                             onClick={() => setItemToEdit(item)}
-                            aria-label={`I-edit ang ${item.name}`}
                           >
                             <Pencil size={13} />
                             Edit
                           </button>
 
                           <button
-                            className="btn-del"
                             type="button"
+                            className="btn-del"
                             onClick={() => setItemToDelete(item)}
-                            aria-label={`I-delete ang ${item.name}`}
                           >
                             <Trash2 size={13} />
                             Delete
@@ -495,7 +549,6 @@ export default function InventoryTable() {
             <div className="modal__head">
               <div>
                 <h2 className="modal__title">Delete Item?</h2>
-
                 <p className="modal__sub">
                   Sigurado ka bang gusto mong tanggalin ang{" "}
                   <strong>{itemToDelete.name}</strong>?

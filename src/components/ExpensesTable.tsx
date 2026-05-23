@@ -1,4 +1,11 @@
-import { Pencil, ReceiptText, Trash2, X, Loader2 } from "lucide-react";
+import {
+  Download,
+  Pencil,
+  ReceiptText,
+  Trash2,
+  X,
+  Loader2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -7,7 +14,7 @@ import {
   useUpdateExpense,
 } from "../hooks/useExpenses";
 
-import "../style/components/InventoryTable.css";
+import "../style/components/ExpensesTable.css";
 
 type Category = "Supplies" | "Utilities" | "Rent" | "Delivery" | "Other";
 
@@ -37,6 +44,30 @@ const CATEGORIES: Category[] = [
 ];
 
 const getExpenseId = (expense: Expense) => expense._id || expense.id;
+
+const getExpensesList = (data: unknown): Expense[] => {
+  if (Array.isArray(data)) return data;
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "expenses" in data &&
+    Array.isArray((data as { expenses?: Expense[] }).expenses)
+  ) {
+    return (data as { expenses: Expense[] }).expenses;
+  }
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "data" in data &&
+    Array.isArray((data as { data?: Expense[] }).data)
+  ) {
+    return (data as { data: Expense[] }).data;
+  }
+
+  return [];
+};
 
 const toInputDate = (date?: string) => {
   if (!date) return new Date().toISOString().slice(0, 10);
@@ -320,7 +351,7 @@ export default function ExpensesTable() {
   const { data, isLoading } = useExpenses();
   const deleteExpense = useDeleteExpense();
 
-  const expenses: Expense[] = Array.isArray(data) ? data : [];
+  const expenses = getExpensesList(data);
 
   const total = expenses.reduce(
     (sum, expense) => sum + Number(expense.amount || 0),
@@ -328,6 +359,38 @@ export default function ExpensesTable() {
   );
 
   const count = expenses.length;
+
+  const downloadExcel = async () => {
+    const XLSX = await import("xlsx");
+
+    const rows: {
+      Category: string;
+      Description: string;
+      Date: string;
+      Amount: number;
+    }[] = expenses.map((expense) => ({
+      Category: expense.category,
+      Description: expense.description,
+      Date: formatDate(expense.date || expense.createdAt),
+      Amount: Number(expense.amount || 0),
+    }));
+
+    rows.push({
+      Category: "TOTAL",
+      Description: "",
+      Date: "",
+      Amount: total,
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    worksheet["!cols"] = [{ wch: 18 }, { wch: 35 }, { wch: 18 }, { wch: 15 }];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
+    XLSX.writeFile(workbook, "expenses-report.xlsx");
+  };
 
   const confirmDelete = () => {
     if (!expenseToDelete) return;
@@ -355,11 +418,22 @@ export default function ExpensesTable() {
           </div>
 
           {!isLoading && count > 0 && (
-            <div className="et-toolbar__total">
-              Kabuuan:{" "}
-              <span className="et-toolbar__total-val">
-                {formatAmount(total)}
-              </span>
+            <div className="et-toolbar__right">
+              <div className="et-toolbar__total">
+                Kabuuan:{" "}
+                <span className="et-toolbar__total-val">
+                  {formatAmount(total)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="et-download"
+                onClick={downloadExcel}
+              >
+                <Download size={15} />
+                Download Excel
+              </button>
             </div>
           )}
         </div>

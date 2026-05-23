@@ -235,7 +235,7 @@ function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
               <Box size={20} />
             </div>
 
-            <h2 className="modal__title">Mag-add ng Inventory</h2>
+            <h2 className="modal__title">Add Item</h2>
 
             <p className="modal__sub">
               I-record ang bagong item, presyo, stock, at low-stock level.
@@ -272,9 +272,9 @@ export default function InventoryPage() {
     <div className="ep">
       <header className="ep__header">
         <div>
-          <p className="ep__eyebrow">Imbentaryo Management</p>
+          <p className="ep__eyebrow">Inventory Management</p>
 
-          <h1 className="ep__title">Imbentaryo</h1>
+          <h1 className="ep__title">Inventory</h1>
 
           <p className="ep__sub">
             Manage stock, price, category, at low-stock alerts.
@@ -282,7 +282,7 @@ export default function InventoryPage() {
         </div>
 
         <button className="btn-add" onClick={open} type="button">
-          <Plus size={16} /> Mag-add ng Inventory
+          <Plus size={16} /> Add Item
         </button>
       </header>
 

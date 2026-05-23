@@ -1,4 +1,11 @@
-import { Loader2, Pencil, ReceiptText, Trash2, X } from "lucide-react";
+import {
+  Download,
+  Loader2,
+  Pencil,
+  ReceiptText,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useDeleteSale, useSales, useUpdateSale } from "../hooks/useSales";
@@ -37,6 +44,30 @@ const PAYMENT_METHODS: PaymentMethod[] = ["Cash", "GCash", "Maya", "Card"];
 const STATUSES: SaleStatus[] = ["Completed", "Pending", "Cancelled"];
 
 const getSaleId = (sale: Sale) => sale._id || sale.id;
+
+const getSalesList = (data: unknown): Sale[] => {
+  if (Array.isArray(data)) return data;
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "sales" in data &&
+    Array.isArray((data as { sales?: Sale[] }).sales)
+  ) {
+    return (data as { sales: Sale[] }).sales;
+  }
+
+  if (
+    data &&
+    typeof data === "object" &&
+    "data" in data &&
+    Array.isArray((data as { data?: Sale[] }).data)
+  ) {
+    return (data as { data: Sale[] }).data;
+  }
+
+  return [];
+};
 
 const toInputDate = (date?: string) => {
   if (!date) return new Date().toISOString().slice(0, 10);
@@ -235,12 +266,7 @@ function EditSaleModal({
             <p className="modal__sub">I-update ang details ng selected sale.</p>
           </div>
 
-          <button
-            type="button"
-            className="modal__close"
-            onClick={onClose}
-            aria-label="Close edit modal"
-          >
+          <button type="button" className="modal__close" onClick={onClose}>
             <X size={16} />
           </button>
         </div>
@@ -250,14 +276,11 @@ function EditSaleModal({
             <label className="ef__label">
               Item <span className="ef__req">*</span>
             </label>
-
             <input
               type="text"
-              placeholder="Hal. Coke, Bigas, LPG..."
               value={form.item}
               onChange={(event) => set("item", event.target.value)}
             />
-
             {errors.item && <p className="ef__hint">{errors.item}</p>}
           </div>
 
@@ -266,14 +289,12 @@ function EditSaleModal({
               <label className="ef__label">
                 Quantity <span className="ef__req">*</span>
               </label>
-
               <input
                 type="number"
                 min="1"
                 value={form.qty}
                 onChange={(event) => set("qty", Number(event.target.value))}
               />
-
               {errors.qty && <p className="ef__hint">{errors.qty}</p>}
             </div>
 
@@ -281,35 +302,28 @@ function EditSaleModal({
               <label className="ef__label">
                 Price <span className="ef__req">*</span>
               </label>
-
               <div className="ef__amount">
                 <span className="ef__peso">₱</span>
-
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  placeholder="0.00"
                   value={form.price === 0 ? "" : form.price}
                   onChange={(event) => set("price", Number(event.target.value))}
                 />
               </div>
-
               {errors.price && <p className="ef__hint">{errors.price}</p>}
             </div>
           </div>
 
           <div>
             <span className="ef__label">Payment Method</span>
-
             <div className="ef__chips">
               {PAYMENT_METHODS.map((method) => (
                 <button
                   key={method}
                   type="button"
-                  className={`chip${
-                    form.paymentMethod === method ? " chip--on" : ""
-                  }`}
+                  className={`chip${form.paymentMethod === method ? " chip--on" : ""}`}
                   onClick={() => set("paymentMethod", method)}
                 >
                   {method}
@@ -321,7 +335,6 @@ function EditSaleModal({
           <div className="ef__grid">
             <div>
               <label className="ef__label">Customer</label>
-
               <input
                 type="text"
                 value={form.customerName}
@@ -331,7 +344,6 @@ function EditSaleModal({
 
             <div>
               <label className="ef__label">Sale Date</label>
-
               <input
                 type="date"
                 value={form.saleDate}
@@ -342,7 +354,6 @@ function EditSaleModal({
 
           <div>
             <span className="ef__label">Status</span>
-
             <div className="ef__chips">
               {STATUSES.map((status) => (
                 <button
@@ -389,7 +400,7 @@ export default function SalesTable() {
   const { data, isLoading } = useSales();
   const deleteSale = useDeleteSale();
 
-  const sales: Sale[] = Array.isArray(data) ? data : [];
+  const sales = getSalesList(data);
 
   const totalSales = sales.reduce(
     (sum, sale) => sum + Number(sale.amount || 0),
@@ -397,6 +408,63 @@ export default function SalesTable() {
   );
 
   const count = sales.length;
+
+  const downloadExcel = async () => {
+    const XLSX = await import("xlsx");
+
+    const rows: {
+      Item: string;
+      Qty: number;
+      Price: number;
+      Amount: number;
+      Payment: string;
+      Customer: string;
+      Date: string;
+      Status: string;
+    }[] = sales.map((sale) => {
+      const price = sale.price ?? sale.amount / Math.max(sale.qty, 1);
+
+      return {
+        Item: sale.item,
+        Qty: Number(sale.qty || 0),
+        Price: Number(price || 0),
+        Amount: Number(sale.amount || 0),
+        Payment: sale.paymentMethod,
+        Customer: sale.customerName || "Walk-in",
+        Date: formatDate(sale.saleDate || sale.date || sale.createdAt),
+        Status: sale.status || "Completed",
+      };
+    });
+
+    rows.push({
+      Item: "TOTAL",
+      Qty: 0,
+      Price: 0,
+      Amount: totalSales,
+      Payment: "",
+      Customer: "",
+      Date: "",
+      Status: "",
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    worksheet["!cols"] = [
+      { wch: 24 },
+      { wch: 10 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 20 },
+      { wch: 18 },
+      { wch: 16 },
+    ];
+
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sales");
+    XLSX.writeFile(workbook, "sales-report.xlsx");
+  };
 
   const confirmDelete = () => {
     if (!saleToDelete) return;
@@ -423,11 +491,22 @@ export default function SalesTable() {
           </div>
 
           {!isLoading && count > 0 && (
-            <div className="st-toolbar__total">
-              Total Sales:{" "}
-              <span className="st-toolbar__total-val">
-                {formatAmount(totalSales)}
-              </span>
+            <div className="st-toolbar__right">
+              <div className="st-toolbar__total">
+                Total Sales:{" "}
+                <span className="st-toolbar__total-val">
+                  {formatAmount(totalSales)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="st-download"
+                onClick={downloadExcel}
+              >
+                <Download size={15} />
+                Download Excel
+              </button>
             </div>
           )}
         </div>
@@ -438,7 +517,6 @@ export default function SalesTable() {
               <thead>
                 <TableHead />
               </thead>
-
               <tbody>
                 {Array.from({ length: 4 }).map((_, index) => (
                   <SkeletonRow key={`sales-skeleton-${index}`} />
@@ -450,9 +528,7 @@ export default function SalesTable() {
               <div className="st-empty__icon">
                 <ReceiptText size={24} />
               </div>
-
               <p className="st-empty__title">Walang sales pa</p>
-
               <p className="st-empty__sub">
                 Mag-click ng "Mag-log ng Sale" para magsimula.
               </p>
@@ -462,7 +538,6 @@ export default function SalesTable() {
               <thead>
                 <TableHead />
               </thead>
-
               <tbody>
                 {sales.map((sale, index) => {
                   const id = getSaleId(sale);
@@ -475,15 +550,12 @@ export default function SalesTable() {
                       <td>
                         <span className="st-item">{sale.item}</span>
                       </td>
-
                       <td>
                         <span className="st-qty">{sale.qty}</span>
                       </td>
-
                       <td>
                         <span className="st-price">{formatAmount(price)}</span>
                       </td>
-
                       <td>
                         <span className="st-amount">
                           {formatAmount(sale.amount)}
@@ -514,9 +586,7 @@ export default function SalesTable() {
 
                       <td>
                         <span
-                          className={`status-badge status-${
-                            sale.status || "Completed"
-                          }`}
+                          className={`status-badge status-${sale.status || "Completed"}`}
                         >
                           {sale.status || "Completed"}
                         </span>
@@ -528,7 +598,6 @@ export default function SalesTable() {
                             type="button"
                             className="btn-edit"
                             onClick={() => setSaleToEdit(sale)}
-                            aria-label={`I-edit ang ${sale.item}`}
                           >
                             <Pencil size={13} />
                             Edit
@@ -538,7 +607,6 @@ export default function SalesTable() {
                             type="button"
                             className="btn-del"
                             onClick={() => setSaleToDelete(sale)}
-                            aria-label={`I-delete ang ${sale.item}`}
                           >
                             <Trash2 size={13} />
                             Delete
@@ -562,7 +630,6 @@ export default function SalesTable() {
             <div className="modal__head">
               <div>
                 <h2 className="modal__title">Delete Sale?</h2>
-
                 <p className="modal__sub">
                   Sigurado ka bang gusto mong tanggalin ang sale for{" "}
                   <strong>{saleToDelete.item}</strong>?

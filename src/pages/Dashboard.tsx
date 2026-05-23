@@ -129,7 +129,7 @@ export default function HomePage() {
           <span>
             {isLoading
               ? "Loading latest business data..."
-              : "Real-time tracking ng benta, gastos, at stock."}
+              : "Trackabao gives you a quick overview of your sales, expenses, profit, and inventory status. Stay on top of your negosyo's performance at a glance!"}
           </span>
         </div>
       </section>
@@ -173,7 +173,7 @@ export default function HomePage() {
       </section>
 
       <section className="dashboard-grid">
-        <ActivityCard title="Recent Benta" subtitle="Latest sales">
+        <ActivityCard title="Recent Transactions" subtitle="Latest sales">
           <div className="activity-list">
             {dashboardData.sales.slice(0, 5).length === 0 ? (
               <p className="muted">Wala pang benta.</p>

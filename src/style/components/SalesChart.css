@@ -1,26 +1,151 @@
 .sales-chart {
-  background: rgba(15, 23, 42, 0.88);
+  background: #0f172a;
   border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 24px;
+  border-radius: 26px;
   overflow: hidden;
+  box-shadow: 0 18px 45px rgba(2, 6, 23, 0.35);
 }
 
 .sales-chart__header {
-  padding: 22px 24px 14px;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 26px 30px 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  flex-wrap: wrap;
 }
 
 .sales-chart__header h3 {
   margin: 0;
-  font-size: 18px;
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 900;
 }
 
 .sales-chart__header p {
-  margin: 6px 0 0;
+  margin: 7px 0 0;
+  color: #3b82f6;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sales-chart__summary {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sales-chart__summary div {
+  min-width: 120px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.sales-chart__summary span {
+  display: block;
   color: #94a3b8;
-  font-size: 14px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.sales-chart__summary strong {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
 }
 
 .sales-chart__body {
-  padding: 18px;
+  padding: 20px 22px 24px;
+}
+
+.sales-chart-tooltip {
+  min-width: 190px;
+  padding: 14px 15px;
+  background: rgba(2, 6, 23, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+.sales-chart-tooltip__day {
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.sales-chart-tooltip__row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+.sales-chart-tooltip__row strong {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.sales-chart-tooltip__divider {
+  height: 1px;
+  background: rgba(148, 163, 184, 0.16);
+  margin: 10px 0;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+}
+
+.dot--sales {
+  background: #f59e0b;
+}
+
+.dot--expenses {
+  background: #ef4444;
+}
+
+.dot--profit {
+  background: #22c55e;
+}
+
+.positive {
+  color: #22c55e !important;
+}
+
+.negative {
+  color: #ef4444 !important;
+}
+
+.recharts-tooltip-cursor {
+  rx: 14;
+}
+
+@media (max-width: 768px) {
+  .sales-chart__header {
+    padding: 22px;
+  }
+
+  .sales-chart__summary {
+    width: 100%;
+  }
+
+  .sales-chart__summary div {
+    flex: 1;
+  }
+
+  .sales-chart__body {
+    padding: 14px;
+  }
 }
