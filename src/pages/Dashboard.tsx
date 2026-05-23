@@ -2,13 +2,9 @@ import { useEffect, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Package, ReceiptText, ShoppingCart, TrendingUp } from "lucide-react";
 
-import InventoryTable from "../components/InventoryTable";
 import StatCard from "../components/ui/StatCard";
 import SalesChart from "../components/SalesChart";
-import SalesTable from "../components/SalesTable";
 import ActivityCard from "../components/ui/ActivityCard";
-import ExpensesTable from "../components/ExpensesTable";
-
 import { useExpenses } from "../hooks/useExpenses";
 import { useInventory } from "../hooks/useInventory";
 import { useSales } from "../hooks/useSales";
@@ -215,9 +211,6 @@ export default function HomePage() {
       </section>
 
       <SalesChart />
-      <SalesTable />
-      <InventoryTable />
-      <ExpensesTable />
     </div>
   );
 }

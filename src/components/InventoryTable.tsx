@@ -214,7 +214,7 @@ function EditInventoryModal({ item, onClose }: EditInventoryModalProps) {
           <div>
             <h2 className="modal__title">Edit Inventory</h2>
             <p className="modal__sub">
-              I-update ang item details, presyo, stock, at low-stock level.
+              Update the item details, price, stock, and low-stock level.
             </p>
           </div>
 
@@ -406,7 +406,7 @@ export default function InventoryTable() {
       <div className="it-card">
         <div className="it-toolbar">
           <div className="it-toolbar__left">
-            <span className="it-toolbar__title">Listahan ng Imbentaryo</span>
+            <span className="it-toolbar__title">List of Inventory Items</span>
             {!isLoading && <span className="it-toolbar__count">{count}</span>}
           </div>
 
@@ -448,9 +448,9 @@ export default function InventoryTable() {
               <div className="it-empty__icon">
                 <Package size={24} />
               </div>
-              <p className="it-empty__title">Walang inventory item pa</p>
+              <p className="it-empty__title">No inventory items yet</p>
               <p className="it-empty__sub">
-                Mag-add ng item para masimulan ang inventory tracking.
+                Add an item to get started with inventory tracking.
               </p>
             </div>
           ) : (
@@ -550,7 +550,7 @@ export default function InventoryTable() {
               <div>
                 <h2 className="modal__title">Delete Item?</h2>
                 <p className="modal__sub">
-                  Sigurado ka bang gusto mong tanggalin ang{" "}
+                  Are you sure you want to delete the item{" "}
                   <strong>{itemToDelete.name}</strong>?
                 </p>
               </div>

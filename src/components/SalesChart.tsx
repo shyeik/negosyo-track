@@ -163,17 +163,17 @@ export default function SalesChart() {
       <div className="sales-chart__header">
         <div>
           <h3>Weekly Analytics</h3>
-          <p>Benta vs gastos from your actual records</p>
+          <p>Analyze your sales and expenses over the past week.</p>
         </div>
 
         <div className="sales-chart__summary">
           <div>
-            <span>Total Benta</span>
+            <span>Total Sales</span>
             <strong>{money(totals.benta)}</strong>
           </div>
 
           <div>
-            <span>Total Gastos</span>
+            <span>Total Expenses</span>
             <strong>{money(totals.gastos)}</strong>
           </div>
 

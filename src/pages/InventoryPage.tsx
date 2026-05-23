@@ -172,7 +172,7 @@ function InventoryForm({ onSuccess }: InventoryFormProps) {
           </>
         ) : (
           <>
-            <PackagePlus size={16} /> I-save ang Item
+            <PackagePlus size={16} /> Save Item
           </>
         )}
       </button>
@@ -238,7 +238,7 @@ function AddInventoryModal({ isOpen, onClose }: AddInventoryModalProps) {
             <h2 className="modal__title">Add Item</h2>
 
             <p className="modal__sub">
-              I-record ang bagong item, presyo, stock, at low-stock level.
+              Record the new item, price, stock, and low-stock level.
             </p>
           </div>
 

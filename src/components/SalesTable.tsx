@@ -263,7 +263,9 @@ function EditSaleModal({
         <div className="modal__head modal__head--between">
           <div>
             <h2 className="modal__title">Edit Sale</h2>
-            <p className="modal__sub">I-update ang details ng selected sale.</p>
+            <p className="modal__sub">
+              Update the details of the selected sale.
+            </p>
           </div>
 
           <button type="button" className="modal__close" onClick={onClose}>
@@ -486,7 +488,7 @@ export default function SalesTable() {
       <div className="st-card">
         <div className="st-toolbar">
           <div className="st-toolbar__left">
-            <span className="st-toolbar__title">Listahan ng Benta</span>
+            <span className="st-toolbar__title">List of Sales</span>
             {!isLoading && <span className="st-toolbar__count">{count}</span>}
           </div>
 
@@ -528,10 +530,8 @@ export default function SalesTable() {
               <div className="st-empty__icon">
                 <ReceiptText size={24} />
               </div>
-              <p className="st-empty__title">Walang sales pa</p>
-              <p className="st-empty__sub">
-                Mag-click ng "Mag-log ng Sale" para magsimula.
-              </p>
+              <p className="st-empty__title">No sales yet</p>
+              <p className="st-empty__sub">Click "Log Sale" to get started.</p>
             </div>
           ) : (
             <table className="st">
@@ -631,7 +631,7 @@ export default function SalesTable() {
               <div>
                 <h2 className="modal__title">Delete Sale?</h2>
                 <p className="modal__sub">
-                  Sigurado ka bang gusto mong tanggalin ang sale for{" "}
+                  Are you sure you want to delete the sale for{" "}
                   <strong>{saleToDelete.item}</strong>?
                 </p>
               </div>

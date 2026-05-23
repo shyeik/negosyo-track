@@ -171,7 +171,7 @@ function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           </>
         ) : (
           <>
-            <ReceiptText size={16} /> I-save ang Gastos
+            <ReceiptText size={16} /> Save Expense
           </>
         )}
       </button>
@@ -236,7 +236,7 @@ function AddExpenseModal({ isOpen, onClose }: AddExpenseModalProps) {
 
             <h2 className="modal__title">Add Expenses</h2>
 
-            <p className="modal__sub">I-record ang bagong business expense.</p>
+            <p className="modal__sub">Record a new business expense.</p>
           </div>
 
           <button
@@ -271,10 +271,10 @@ export default function ExpensesPage() {
         <div>
           <p className="ep__eyebrow">Expenses Management</p>
 
-          <h1 className="ep__title">Mga Gastos</h1>
+          <h1 className="ep__title">List of Expenses</h1>
 
           <p className="ep__sub">
-            I-log, i-monitor, at i-manage ang lahat ng business expenses.
+            Log, monitor, and manage all business expenses.
           </p>
         </div>
 

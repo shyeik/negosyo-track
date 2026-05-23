@@ -233,9 +233,9 @@ function EditExpenseModal({ expense, onClose }: EditExpenseModalProps) {
       <div className="modal modal--on edit-modal">
         <div className="modal__head modal__head--between">
           <div>
-            <h2 className="modal__title">Edit Gastos</h2>
+            <h2 className="modal__title">Edit Expense</h2>
             <p className="modal__sub">
-              I-update ang details ng selected expense.
+              Update the details of the selected expense.
             </p>
           </div>
 
@@ -412,7 +412,7 @@ export default function ExpensesTable() {
       <div className="et-card">
         <div className="et-toolbar">
           <div className="et-toolbar__left">
-            <span className="et-toolbar__title">Listahan ng Gastos</span>
+            <span className="et-toolbar__title">List of Expenses</span>
 
             {!isLoading && <span className="et-toolbar__count">{count}</span>}
           </div>
@@ -420,7 +420,7 @@ export default function ExpensesTable() {
           {!isLoading && count > 0 && (
             <div className="et-toolbar__right">
               <div className="et-toolbar__total">
-                Kabuuan:{" "}
+                Total:{" "}
                 <span className="et-toolbar__total-val">
                   {formatAmount(total)}
                 </span>
@@ -457,10 +457,10 @@ export default function ExpensesTable() {
                 <ReceiptText size={24} />
               </div>
 
-              <p className="et-empty__title">Walang gastos pa</p>
+              <p className="et-empty__title">No expenses yet</p>
 
               <p className="et-empty__sub">
-                Mag-click ng "Mag-log ng Gastos" para magsimula.
+                Click "Log Expense" to get started.
               </p>
             </div>
           ) : (
@@ -551,10 +551,10 @@ export default function ExpensesTable() {
           <div className="modal modal--on delete-modal">
             <div className="modal__head">
               <div>
-                <h2 className="modal__title">Delete Gastos?</h2>
+                <h2 className="modal__title">Delete Expense?</h2>
 
                 <p className="modal__sub">
-                  Sigurado ka bang gusto mong tanggalin ang{" "}
+                  Are you sure you want to delete the expense{" "}
                   <strong>{expenseToDelete.description}</strong>?
                 </p>
               </div>

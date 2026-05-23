@@ -180,7 +180,8 @@ function SaleForm({ onSuccess }: { onSuccess: () => void }) {
           </>
         ) : (
           <>
-            <ReceiptText size={16} /> I-save ang Sale
+            <ReceiptText size={16} />
+            Save Sale
           </>
         )}
       </button>
@@ -235,7 +236,7 @@ function AddSaleModal({
               <Receipt size={20} />
             </div>
             <h2 className="modal__title">Add Sale</h2>
-            <p className="modal__sub">I-record ang bagong transaction.</p>
+            <p className="modal__sub">Add a new sales transaction.</p>
           </div>
 
           <button className="modal__close" onClick={onClose} type="button">
@@ -266,7 +267,7 @@ export default function SalesPage() {
           <p className="ep__eyebrow">Sales Management</p>
           <h1 className="ep__title">Sales</h1>
           <p className="ep__sub">
-            I-log, i-monitor, at i-manage ang lahat ng sales transactions.
+            Log, monitor, and manage all sales transactions.
           </p>
         </div>
 
